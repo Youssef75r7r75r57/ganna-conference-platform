@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Activity, AtSign, ArrowDown, ArrowLeft, ArrowUpLeft, Award, Baby, BookOpen, Building2,
-  CalendarDays, Check, ChevronDown, CircleHelp, ClipboardList, ExternalLink,
+  CalendarDays, CalendarPlus, Check, ChevronDown, CircleHelp, ClipboardList, Compass, ExternalLink,
   FileCheck2, HeartPulse, Hospital, Image as ImageIcon, Languages, Link2, Mail,
-  MapPin, Menu, Phone, Play, Plus, Search, Settings, Shield, ShieldCheck, Sparkles,
+  Home, MapPin, Menu, MessageCircle, Phone, Play, Plus, Search, Settings, Shield, ShieldCheck, Sparkles,
   Stethoscope, UserCog, Users, Video, X,
 } from "lucide-react";
 import { api } from "./api.js";
 import { brandLogos, conferences, gallery, GUIDELINES_PLATFORM_URL, labels, lectures, stats, videos } from "./data.js";
 import { EGYPTIAN_MOBILE_PATTERN, normalizeEgyptianMobile } from "./phone.js";
+
+const HOSPITAL_IMAGE_URL = "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1500&q=85";
 
 const copy = {
   ar: {
@@ -17,7 +19,7 @@ const copy = {
     explore: "اكتشف المؤتمر", registerNow: "سجل الأن", scroll: "اكتشف المزيد",
     nextConference: "المؤتمر العلمي الخامس عشر", nextTheme: "معًا من أجل صحة المرأة.", nextDate: "٢٣ أكتوبر ٢٠٢٦ · القاهرة",
     statsTitle: "برنامج علمي في أربعة مسارات", statsText: "التوليد وأمراض النساء وعلم الأجنة وورش التوليد المتقدمة، بحسب برنامج المؤتمر.",
-    aboutEyebrow: "عن المؤتمر", aboutTitle: "معرفة أقرب إلى رعاية أفضل.", aboutText: "يجمع المؤتمر العلمي الخامس عشر لجنى المتخصصين في التوليد وأمراض النساء والخصوبة وعلم الأجنة لمشاركة المعرفة واستكشاف أحدث الإرشادات والممارسات.",
+    aboutEyebrow: "عن المؤتمر",
     learnMore: "تعرف على المؤتمر", highlight: "من قلب المؤتمر", galleryTitle: "لحظات تبقى معنا", viewGallery: "شاهد معرض الصور",
     scienceEyebrow: "المعرفة في متناولك", lecturesTitle: "أفكار تستحق أن تُروى.", lecturesText: "ملخصات علمية لأبرز الجلسات والمتحدثين، لتبقى المعرفة قريبة منك.", browseLectures: "استكشف المحاضرات",
     guideEyebrow: "مرجعك العلمي", guideTitle: "دليل موثوق، بخطوة واحدة.", guideText: "اكتشف المراجع الطبية والإرشادات المعتمدة عبر منصة الجايدلاينز.", guideButton: "اكتشف الجايدلاينز",
@@ -27,10 +29,8 @@ const copy = {
     vision: "رؤيتنا", visionText: "مجتمع صحي يملك المعرفة والأدوات لدعم صحة المرأة في كل مراحل حياتها.", mission: "رسالتنا", missionText: "تمكين مقدمي الرعاية بالعلم والحوار والتعاون متعدد التخصصات.",
     goals: "ما نسعى إليه", goal1: "تعزيز الممارسات المبنية على الدليل العلمي.", goal2: "خلق مساحة حوار بين الخبراء ومقدمي الرعاية.", goal3: "دعم التعلم المستمر وتحسين جودة الخدمات.", goal4: "الارتقاء برعاية المرأة وصحة الأم والجنين.",
     principles: "قيم تجمعنا", principle1: "العلم أولًا", principle2: "صحة المرأة", principle3: "نعمل معًا", principle4: "أثر يدوم",
-    homeExploreEyebrow: "اكتشف مساحات جنى", homeExploreTitle: "مصادر واضحة، وخطوات أقرب إليك.", homeExploreText: "افتح الإرشادات الطبية، تعرّف على رعاية مستشفى جنى، شاهد محتوى المؤتمر، أو اسأل فريقه.",
     aboutResourcesTitle: "المعرفة والتجربة في مكان واحد.", aboutResourcesText: "استكشف محاضرات المؤتمر ولقطاته؛ محتوى علمي وتجارب مصوّرة تستحق أن تبقى قريبة منك.",
     showcaseGalleryText: "شاهد صورًا مختارة من مجتمع جنى وفعالياته العلمية.", showcaseGalleryAction: "تصفّح كل الصور",
-    showcaseVideoText: "لمحة مرئية من أرشيف المؤتمر والجلسات.", showcaseVideoAction: "شاهد المعاينة",
     showcaseGuidelinesText: "مرجع طبي رقمي يسهّل الوصول إلى الإرشادات والمصادر المتخصصة.", showcaseGuidelinesAction: "افتح منصة الإرشادات", showcaseGuidelineTopics: ["التوليد", "أمراض النساء", "الخصوبة"],
     showcaseHospitalText: "تعرّف على خدمات صحة المرأة ورعاية الأم والجنين.", showcaseHospitalAction: "اكتشف المستشفى", showcaseHospitalTopics: ["صحة المرأة", "رعاية الأم والجنين"],
     showcaseAskText: "وجّه سؤالك إلى فريق المؤتمر ليُراجع ويوجّه للمختص.", showcaseAskAction: "أرسل سؤالك",
@@ -40,8 +40,8 @@ const copy = {
     pageCertificates: "شهاداتك هنا", certTitle: "ابحث عن شهادتك.", certText: "ابحث بالاسم الإنجليزي كما هو مكتوب في الشهادة. يمكنك كتابة الاسم مع أو بدون Doctor أو Dr. النتائج تجريبية.",
     certType: "نوع الشهادة", allTypes: "كل الشهادات", regular: "شهادة حضور", cme: "شهادة CME", registeredName: "الاسم بالإنجليزية كما في الشهادة", namePlaceholder: "Dr. Mona Mohammed Abdelgader Mohammed", registeredPhone: "رقم الهاتف المسجل لشهادة CME", phonePlaceholder: "01203350245", phoneError: "أدخل رقمًا مصريًا صحيحًا من 11 رقمًا يبدأ بـ 010 أو 011 أو 012 أو 015.", certSearch: "ابحث عن شهادة", searching: "جارٍ البحث...", noCert: "لم نعثر على شهادة مطابقة. اكتب الاسم الإنجليزي كما هو مكتوب في الشهادة ورقم الهاتف الصحيح لشهادة CME.", certFound: "شهادات مطابقة", preview: "معاينة", download: "تنزيل PDF", openDocument: "فتح الشهادة في نافذة جديدة", secureCertificateNote: "تم التحقق من الشهادة. يمكنك معاينتها أو تنزيلها بأمان.", certificateLinkUnavailable: "تعذر الوصول إلى ملف الشهادة بأمان. حاول مرة أخرى أو تواصل مع فريق المؤتمر.", demoUnavailable: "هذه ملفات وبيانات تجريبية للعرض فقط وليست شهادات حقيقية. البحث عن شهادة حقيقية وتنزيلها يتطلب Backend آمنًا.",
     pageGallery: "ألبومات المؤتمر", galleryPageTitle: "حكايات في صور.", allAlbums: "الكل", albumEvents: "الفعاليات", albumSessions: "الجلسات العلمية", albumCommunity: "المجتمع", photoNote: "تضم هذه المجموعة كل الصور المضافة إلى مجلد data، ويمكن إدارة الألبومات لاحقًا من لوحة المحتوى.",
-    pageVideos: "من أرشيفنا", videosTitle: "شاهد، وتذكّر، وتعلّم.", watch: "شاهد الفيديو", videoDemo: "الفيديوهات المعروضة نماذج تصميمية؛ تضاف روابط البث من لوحة المحتوى.",
-    pageLectures: "مكتبة المعرفة", lecturePageTitle: "العلم يستمر بعد الجلسة.", filterBy: "تصفية حسب", filterSpecialty: "التخصص", filterSpeaker: "المتحدث", filterSession: "الجلسة العلمية", allSpecialties: "كل التخصصات", allSpeakers: "كل المتحدثين", allSessions: "كل الجلسات", viewDetails: "تفاصيل المحاضرة", speaker: "المتحدث", specialty: "التخصص", session: "الجلسة العلمية", lectureOverview: "نبذة عن المحاضرة", keyTopics: "محاور أساسية", keyTakeaway: "الفكرة الأهم", takeawayText: "الموضوعات المعروضة نماذج تصميمية مستوحاة من برنامج المؤتمر، وليست إرشادات أو استشارات طبية.", noLectures: "لا توجد محاضرات ضمن هذا الاختيار.",
+    pageVideos: "فيديوهات المؤتمر", videosTitle: "لقطات من لقاءات جنى.", watch: "شاهد الفيديو", videoDemo: "الفيديوهات المعروضة نماذج تصميمية؛ تضاف روابط البث من لوحة المحتوى.",
+    pageLectures: "مكتبة المعرفة", lecturePageTitle: "العلم يستمر بعد الجلسة.", filterBy: "تصفية حسب", filterSpecialty: "التخصص", filterSpeaker: "المتحدث", filterSession: "الجلسة العلمية", allSpecialties: "كل التخصصات", allSpeakers: "كل المتحدثين", allSessions: "كل الجلسات", viewDetails: "تفاصيل المحاضرة", speaker: "المتحدث", specialty: "التخصص", session: "الجلسة العلمية", lectureOverview: "تفاصيل الجلسة", noLectures: "لا توجد محاضرات ضمن هذا الاختيار.",
     pageGuidelines: "دليلك الطبي", guidePageTitle: "المعرفة الموثوقة، أقرب إليك.", guidePageText: "استكشف المراجع والإرشادات الطبية المعتمدة عبر منصة الجايدلاينز.", openSearch: "افتح منصة الجايدلاينز", accessPlatform: "زيارة المنصة", externalPending: "ستُفتح منصة الإرشادات الطبية في نافذة جديدة.",
     pageHospital: "مكان الرعاية تبدأ", hospitalTitle: "مستشفى جنى لصحة المرأة.", hospitalText: "مساحة تجريبية للتعريف بخدمات صحة المرأة والتوليد والخصوبة، مع رعاية تراعي احتياجات المرأة والأسرة.", hospitalServices: "خدمات وتخصصات", service1: "أمراض النساء", service2: "رعاية الحمل والولادة", service3: "الخصوبة وعلم الأجنة", service4: "صحة الأم والجنين", hospitalVision: "رؤيتنا في الرعاية", hospitalVisionText: "رعاية ترافق المرأة باحترام واهتمام في مختلف مراحل حياتها.",
     pageAsk: "نسمعك باهتمام", askTitle: "اسأل الخبراء.", askText: "أرسل سؤالك إلى إدارة المؤتمر. تتم مراجعته وتوجيهه للمختص عند الحاجة. لا يُعد هذا النموذج خدمة طوارئ أو استشارة طبية مباشرة.", fullName: "الاسم بالكامل", email: "البريد الإلكتروني", phone: "رقم الهاتف", yourQuestion: "سؤالك", questionPlaceholder: "اكتب سؤالك هنا...", submitQuestion: "إرسال السؤال", submitting: "جارٍ الإرسال...", privateNote: "هذه واجهة تجريبية؛ لا ترسل معلومات شخصية أو طبية حقيقية.", sentQuestion: "تم إرسال سؤالك بنجاح", questionId: "رقم السؤال", questionDisclaimer: "إرسال السؤال لا يضمن الرد الطبي أو الاستشاري.", dataUseConsent: "أوافق على استخدام بياناتي لغرض مراجعة طلبي والرد عليه.",
@@ -53,10 +53,10 @@ const copy = {
   en: {
     tagline: "Ganna Scientific Conference", homeEyebrow: "Together for women's health",
     heroTitle: "Knowledge that moves\nwomen's health forward.", heroText: "Bringing together expertise in obstetrics, gynecology, fertility, and embryology to share ideas and shape better care.",
-    explore: "Explore the conference", registerNow: "Register your interest", scroll: "Discover more",
+    explore: "Explore the conference", registerNow: "Register Now", scroll: "Discover more",
     nextConference: "GANNA'S 15TH SCIENTIFIC CONFERENCE", nextTheme: "Together for women's health.", nextDate: "23 October 2026 · Cairo",
     statsTitle: "A scientific programme across four halls", statsText: "Obstetrics, gynecology, embryology, and an advanced obstetrics workshop, as listed in the conference programme.",
-    aboutEyebrow: "ABOUT THE CONFERENCE", aboutTitle: "Knowledge that brings better care closer.", aboutText: "Ganna's 15th Scientific Conference brings together specialists in obstetrics, gynecology, fertility, and embryology to share knowledge and explore current guidance and practice.",
+    aboutEyebrow: "ABOUT THE CONFERENCE",
     learnMore: "Get to know Ganna", highlight: "INSIDE THE CONFERENCE", galleryTitle: "Moments worth keeping", viewGallery: "Explore the gallery",
     scienceEyebrow: "KNOWLEDGE, WITH YOU", lecturesTitle: "Ideas worth sharing.", lecturesText: "Scientific summaries of key sessions and speakers, keeping knowledge close.", browseLectures: "Explore lectures",
     guideEyebrow: "YOUR SCIENTIFIC RESOURCE", guideTitle: "Trusted guidance, one click away.", guideText: "Explore trusted medical references and guidelines through our guidelines platform.", guideButton: "Explore guidelines",
@@ -66,10 +66,8 @@ const copy = {
     vision: "Our vision", visionText: "A health community equipped to support women's health at every stage of life.", mission: "Our mission", missionText: "Empowering care providers through science, dialogue, and multidisciplinary collaboration.",
     goals: "What we work toward", goal1: "Advance evidence-based clinical practice.", goal2: "Create dialogue between experts and care providers.", goal3: "Support continuous learning and quality improvement.", goal4: "Advance care for women, mothers, and babies.",
     principles: "Values that bring us together", principle1: "Science first", principle2: "Women's health", principle3: "Better together", principle4: "Lasting impact",
-    homeExploreEyebrow: "EXPLORE GANNA", homeExploreTitle: "Clear resources. A closer next step.", homeExploreText: "Open medical guidance, discover Ganna Hospital care, revisit conference content, or ask the team.",
     aboutResourcesTitle: "Knowledge and experiences, together.", aboutResourcesText: "Explore conference lectures and highlights: scientific content and shared moments worth revisiting.",
     showcaseGalleryText: "A curated look at the Ganna community and its scientific events.", showcaseGalleryAction: "Explore all photos",
-    showcaseVideoText: "A visual preview from the conference and its sessions.", showcaseVideoAction: "Play the preview",
     showcaseGuidelinesText: "A digital medical library that brings specialist guidance and resources within reach.", showcaseGuidelinesAction: "Open the guidelines platform", showcaseGuidelineTopics: ["Obstetrics", "Gynecology", "Fertility"],
     showcaseHospitalText: "Discover women's health and maternal-fetal care services.", showcaseHospitalAction: "Discover the hospital", showcaseHospitalTopics: ["Women's health", "Maternal-fetal care"],
     showcaseAskText: "Send your question to the conference team for review and routing.", showcaseAskAction: "Ask a question",
@@ -79,8 +77,8 @@ const copy = {
     pageCertificates: "YOUR CERTIFICATES", certTitle: "Find your certificate.", certText: "Search using the English name as printed on the certificate. You can include or omit Doctor or Dr. Results are demo records only.",
     certType: "Certificate type", allTypes: "All certificates", regular: "Attendance certificate", cme: "CME certificate", registeredName: "Name in English as printed", namePlaceholder: "Dr. Mona Mohammed Abdelgader Mohammed", registeredPhone: "Phone number for CME certificate", phonePlaceholder: "01203350245", phoneError: "Enter a valid 11-digit Egyptian mobile number starting with 010, 011, 012, or 015.", certSearch: "Search certificates", searching: "Searching...", noCert: "No matching certificate found. Enter the English name as printed on the certificate and the correct phone for CME.", certFound: "Matching certificates", preview: "Preview", download: "Download PDF", openDocument: "Open certificate in a new tab", secureCertificateNote: "Your certificate is verified and ready to preview or download securely.", certificateLinkUnavailable: "The certificate file is not available securely. Try again or contact the conference team.", demoUnavailable: "These files and records are for demonstration only; they are not real certificates. Searching for and downloading real certificates requires a secure backend.",
     pageGallery: "CONFERENCE ALBUMS", galleryPageTitle: "Stories in photographs.", allAlbums: "All", albumEvents: "Highlights", albumSessions: "Scientific sessions", albumCommunity: "Community", photoNote: "This gallery includes every photo supplied in the data folder. Albums can be managed through the content dashboard later.",
-    pageVideos: "FROM OUR ARCHIVE", videosTitle: "Watch, remember, learn.", watch: "Watch video", videoDemo: "These videos are design samples; streaming links will be added through the content dashboard.",
-    pageLectures: "KNOWLEDGE LIBRARY", lecturePageTitle: "The learning continues after the session.", filterBy: "Filter by", filterSpecialty: "Specialty", filterSpeaker: "Speaker", filterSession: "Scientific session", allSpecialties: "All specialties", allSpeakers: "All speakers", allSessions: "All sessions", viewDetails: "View details", speaker: "Speaker", specialty: "Specialty", session: "Scientific session", lectureOverview: "About this lecture", keyTopics: "Key topics", keyTakeaway: "Key takeaway", takeawayText: "Topics shown here are illustrative samples inspired by the conference programme, not medical guidance or advice.", noLectures: "No lectures match this selection.",
+    pageVideos: "CONFERENCE VIDEOS", videosTitle: "Moments from Ganna.", watch: "Watch video", videoDemo: "These videos are design samples; streaming links will be added through the content dashboard.",
+    pageLectures: "KNOWLEDGE LIBRARY", lecturePageTitle: "The learning continues after the session.", filterBy: "Filter by", filterSpecialty: "Specialty", filterSpeaker: "Speaker", filterSession: "Scientific session", allSpecialties: "All specialties", allSpeakers: "All speakers", allSessions: "All sessions", viewDetails: "View details", speaker: "Speaker", specialty: "Specialty", session: "Scientific session", lectureOverview: "Session details", noLectures: "No lectures match this selection.",
     pageGuidelines: "YOUR MEDICAL RESOURCE", guidePageTitle: "Trusted knowledge, within reach.", guidePageText: "Explore trusted medical references and evidence-based guidance through the guidelines platform.", openSearch: "Open the guidelines platform", accessPlatform: "Visit the platform", externalPending: "The medical-guidelines platform opens in a new tab.",
     pageHospital: "WHERE CARE BEGINS", hospitalTitle: "Ganna Women's Health Hospital.", hospitalText: "A sample introduction to women's health, obstetrics, and fertility services, centred on the needs of women and families.", hospitalServices: "Services & specialties", service1: "Gynecology", service2: "Pregnancy and birth care", service3: "Fertility and embryology", service4: "Maternal-fetal health", hospitalVision: "A caring vision", hospitalVisionText: "Care that supports women with respect and attention at every stage of life.",
     pageAsk: "WE'RE LISTENING", askTitle: "Ask the experts.", askText: "Send your question to the conference team. It will be reviewed and routed to a specialist when appropriate. This is not an emergency service or direct medical consultation.", fullName: "Full name", email: "Email address", phone: "Phone number", yourQuestion: "Your question", questionPlaceholder: "Write your question here...", submitQuestion: "Submit question", submitting: "Submitting...", privateNote: "This is a demo interface; do not submit real personal or medical information.", sentQuestion: "Your question was received", questionId: "Question ID", questionDisclaimer: "Submitting a question does not guarantee a medical or advisory response.", dataUseConsent: "I agree to the use of my information to review and respond to my request.",
@@ -93,6 +91,8 @@ const copy = {
 
 const mainNav = ["home", "contact", "lectures", "certificates"];
 const moreNav = ["about", "gallery", "videos", "guidelines", "hospital", "ask"];
+const mainNavIcons = { home: Home, contact: Mail, lectures: BookOpen, certificates: Award };
+const moreNavIcons = { about: BookOpen, gallery: ImageIcon, videos: Play, guidelines: BookOpen, hospital: Hospital, ask: CircleHelp };
 const statusTransitions = {
   questions: { pending: ["under_review", "assigned", "closed"], under_review: ["assigned", "answered", "closed"], assigned: ["under_review", "answered", "closed"], answered: ["closed", "under_review"], closed: ["under_review"] },
   registrations: { pending: ["under_review", "approved", "rejected", "incomplete"], under_review: ["approved", "rejected", "incomplete", "pending"], approved: ["under_review"], rejected: ["under_review"], incomplete: ["under_review", "approved", "rejected"] },
@@ -174,11 +174,15 @@ function App() {
         }
       });
     }, { threshold: 0.12, rootMargin: "0px 0px -30px 0px" });
-    const targets = document.querySelectorAll("main .stat-item, main .about-preview-copy, main .lecture-card, main .showcase-card, main .showcase-lecture-item, main .showcase-gallery-shot, main .closing-cta, main .goal-item, main .values-row > div, main .video-card, main .gallery-card, main .service-card, main .contact-card, main .certificate-panel, main .form-card, main .admin-panel, main .admin-metric-card");
-    targets.forEach((target) => {
+    const groups = [
+      document.querySelectorAll("main .stat-item, main .about-preview-copy, main .lecture-card, main .showcase-card, main .showcase-lecture-item, main .showcase-gallery-shot, main .closing-cta, main .goal-item, main .values-row > div, main .video-card, main .gallery-card, main .service-card, main .contact-card, main .certificate-panel, main .home-certificate-intro, main .home-certificate-note, main .home-certificate-section .certificate-results, main .home-resource-section .section-heading, main .home-guidelines-feature > *, main .home-hospital-feature > *, main .home-ask-feature > *, main .form-card, main .admin-panel, main .admin-metric-card"),
+      document.querySelectorAll("main .button, main .showcase-primary-link, main .text-link, main .hero-scroll"),
+    ];
+    groups.forEach((group) => group.forEach((target, index) => {
       target.classList.add("reveal-on-scroll");
+      target.style.setProperty("--reveal-delay", `${Math.min(index % 5, 4) * 90}ms`);
       observer.observe(target);
-    });
+    }));
     return () => observer.disconnect();
   }, [page]);
 
@@ -206,13 +210,14 @@ function App() {
   return (
     <div className={`site-shell ${isAr ? "is-rtl" : "is-ltr"}`}>
       <header className="site-header">
-        <button className="brand brand-pair" onClick={() => navigate("home")} aria-label="Ganna Conference and Hospitals home">
+        <button className="brand brand-pair" onClick={() => navigate("home")} aria-label="Innovators and Ganna Conference home">
           <BrandLogoPair />
         </button>
         <nav className={`main-nav ${mobileMenu ? "nav-open" : ""}`} aria-label={t("menu")}>
-          {mainNav.map((key) => (
-            <button key={key} className={page === key ? "nav-link active" : "nav-link"} onClick={() => navigate(key)}>{navLabel(key)}</button>
-          ))}
+          {mainNav.map((key) => {
+            const Icon = mainNavIcons[key];
+            return <button key={key} className={page === key ? "nav-link active" : "nav-link"} onClick={() => navigate(key)}><Icon size={15} aria-hidden="true" />{navLabel(key)}</button>;
+          })}
           <div className="more-wrap">
             <button className="nav-link more-trigger" onClick={() => setMoreOpen(!moreOpen)} aria-expanded={moreOpen} aria-controls="more-navigation">
               <Sparkles size={14} aria-hidden="true" />
@@ -226,7 +231,10 @@ function App() {
                   <p>{isAr ? "كل ما تحتاج معرفته عن المؤتمر" : "More ways to connect with the conference"}</p>
                 </div>
                 <div className="more-menu-links">
-                  {moreNav.map((key) => <button key={key} onClick={() => navigate(key)}>{navLabel(key)}<ArrowUpLeft size={14} /></button>)}
+                  {moreNav.map((key, index) => {
+                    const Icon = moreNavIcons[key];
+                    return <button key={key} onClick={() => navigate(key)}><span className="more-menu-index">{String(index + 1).padStart(2, "0")}</span><strong>{navLabel(key)}</strong><Icon size={16} aria-hidden="true" /></button>;
+                  })}
                 </div>
               </div>
             )}
@@ -235,13 +243,13 @@ function App() {
         </nav>
         <div className="header-actions">
           <button className="language-toggle" onClick={switchLanguage} aria-label="Switch language"><Languages size={16} /><span>{isAr ? "EN" : "عربي"}</span></button>
-          <button className="header-register" onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button>
+          <button className="header-register" onClick={() => navigate("register")}><CalendarPlus size={17} />{t("registerNow")}</button>
           <button className="mobile-menu-button" onClick={() => setMobileMenu(!mobileMenu)} aria-label={t("menu")}>{mobileMenu ? <X size={21} /> : <Menu size={21} />}</button>
         </div>
       </header>
 
       <main>
-        {page === "home" && <HomePage t={t} lang={lang} navigate={navigate} openModal={setModal} publicContent={publicContent} />}
+        {page === "home" && <HomePage t={t} lang={lang} navigate={navigate} openModal={setModal} notify={notify} publicContent={publicContent} />}
         {page === "about" && <AboutPage t={t} lang={lang} navigate={navigate} openModal={setModal} publicContent={publicContent} />}
         {page === "certificates" && <CertificatesPage t={t} lang={lang} notify={notify} openModal={setModal} />}
         {page === "gallery" && <GalleryPage t={t} lang={lang} openModal={setModal} items={publicContent.gallery} />}
@@ -262,22 +270,22 @@ function App() {
   );
 }
 
-function HomePage({ t, lang, navigate, openModal, publicContent }) {
+function HomePage({ t, lang, navigate, openModal, notify, publicContent }) {
   const isAr = lang === "ar";
   const nextConference = publicContent.conferences?.find((item) => item.status !== "draft") || conferences[0];
-  const previewVideo = publicContent.videos[0];
   const guidelinesUrl = publicContent.guidelines?.[0]?.url || GUIDELINES_PLATFORM_URL;
   return <>
     <section className="hero">
       <div className="hero-grain" />
       <div className="hero-image" />
       <div className="hero-content">
+        <img className="hero-conference-logo" src={brandLogos.mainDark} alt="Ganna Scientific Conference" />
         <div className="eyebrow light-eyebrow"><span />{t("homeEyebrow")}</div>
         <h1>{t("heroTitle").split("\n").map((line, index) => <span key={index}>{line}</span>)}</h1>
         <p>{t("heroText")}</p>
         <div className="hero-actions">
-          <button className="button button-light" onClick={() => navigate("about")}>{t("explore")}<ArrowLeft size={17} /></button>
-          <button className="button button-ghost-light" onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={16} /></button>
+          <button className="button button-light" onClick={() => navigate("about")}><Compass size={18} />{t("explore")}</button>
+          <button className="button button-ghost-light" onClick={() => navigate("register")}><CalendarPlus size={18} />{t("registerNow")}</button>
         </div>
         <div className="hero-footnote"><span className="footnote-line" />{t("nextConference")} <b>{localized(nextConference.eventDate || nextConference.date, lang) || t("nextDate")}</b></div>
       </div>
@@ -291,51 +299,74 @@ function HomePage({ t, lang, navigate, openModal, publicContent }) {
         <div className="eyebrow"><span />{t("highlight")}</div>
         <h2>{t("statsTitle")}</h2><p>{t("statsText")}</p>
       </div>
-      <div className="stats-grid">{stats.map((item, index) => <div className="stat-item" key={item.value}><span className="stat-index">0{index + 1}</span><strong>{item[lang === "ar" ? "value" : "enValue"]}</strong><span>{item.label[lang]}</span></div>)}</div>
+      <div className="stats-grid">{stats.map((item, index) => <AnimatedStat key={item.value} item={item} index={index} lang={lang} />)}</div>
     </section>
 
-    <section className="about-preview">
-      <div className="about-image"><img src={publicContent.gallery[0]?.image || gallery[0].image} alt="" /><span className="image-note">{isAr ? "رعاية تنطلق من المعرفة" : "CARE INFORMED BY KNOWLEDGE"}</span></div>
-      <div className="about-preview-copy"><div className="eyebrow"><span />{t("aboutEyebrow")}</div><h2>{t("aboutTitle")}</h2><p>{t("aboutText")}</p><button className="text-link" onClick={() => navigate("about")}>{t("learnMore")}<ArrowLeft size={16} /></button><div className="about-scribble">جنى</div></div>
+    <section className="home-certificate-section section-wrap">
+      <div className="home-certificate-intro"><SectionHeading eyebrow={t("pageCertificates")} title={t("certTitle")} text={t("certText")} /><p className="home-certificate-note"><ShieldCheck size={17} />{isAr ? "بيانات وملفات الشهادات تجريبية للعرض فقط. يلزم Backend آمن للبحث عن الشهادات الحقيقية." : "Certificate records and files are demo-only. Real certificate searches require a secure backend."}</p></div>
+      <CertificateSearchPanel t={t} notify={notify} openModal={openModal} compact />
     </section>
-
-    <section className="home-explore section-wrap">
-      <div className="home-explore-heading">
-        <div><div className="eyebrow"><span />{t("homeExploreEyebrow")}</div><h2>{t("homeExploreTitle")}</h2><p>{t("homeExploreText")}</p></div>
-        <span className="home-explore-count">04 <i>/</i> {isAr ? "مساحات" : "EXPERIENCES"}</span>
-      </div>
-    </section>
-
-    {previewVideo && <section className="home-resource-section home-video-section section-wrap">
-      <SectionHeading eyebrow={t("pageVideos")} title={t("videosTitle")} text={t("showcaseVideoText")} action={t("pageVideos")} onAction={() => navigate("videos")} />
-      <div className="home-video-feature">
-        <button className="showcase-video-poster" onClick={() => openModal({ kind: "video", record: previewVideo })} aria-label={`${t("showcaseVideoAction")}: ${localized(previewVideo.title, lang)}`}><img src={previewVideo.image} alt="" /><span className="showcase-play"><Play size={19} fill="currentColor" /></span><span className="showcase-duration">{previewVideo.duration}</span></button>
-        <div className="home-video-copy"><div className="home-feature-index">01 <span>/ {isAr ? "من الأرشيف" : "FROM THE ARCHIVE"}</span></div><h3>{localized(previewVideo.title, lang)}</h3><button className="showcase-primary-link" onClick={() => openModal({ kind: "video", record: previewVideo })}>{t("showcaseVideoAction")}<Play size={14} /></button></div>
-      </div>
-    </section>}
 
     <section className="home-resource-section home-guidelines-section section-wrap">
       <SectionHeading eyebrow={t("pageGuidelines")} title={t("guideTitle")} text={t("showcaseGuidelinesText")} />
       <div className="home-guidelines-feature">
         <div className="home-guidelines-visual" aria-hidden="true"><div className="showcase-guide-cover"><BookOpen size={28} /><span>{t("guideEyebrow")}</span><strong>{t("pageGuidelines")}</strong><i /></div><span className="home-guidelines-decoration">+</span></div>
-        <div className="home-guidelines-copy"><div className="home-feature-index">02 <span>{t("guideEyebrow")}</span></div><div className="showcase-topic-list">{t("showcaseGuidelineTopics").map((topic) => <span key={topic}>{topic}</span>)}</div><a className="showcase-primary-link" href={guidelinesUrl} target="_blank" rel="noopener noreferrer">{t("showcaseGuidelinesAction")}<ExternalLink size={15} /></a></div>
+        <div className="home-guidelines-copy"><div className="home-feature-index">01 <span>{t("guideEyebrow")}</span></div><div className="showcase-topic-list">{t("showcaseGuidelineTopics").map((topic) => <span key={topic}>{topic}</span>)}</div><a className="showcase-primary-link" href={guidelinesUrl} target="_blank" rel="noopener noreferrer"><BookOpen size={17} />{t("showcaseGuidelinesAction")}</a></div>
       </div>
     </section>
 
     <section className="home-resource-section home-hospital-section section-wrap">
       <SectionHeading eyebrow={t("pageHospital")} title={t("hospitalTitle")} text={t("showcaseHospitalText")} />
-      <div className="home-hospital-feature"><div className="home-hospital-identity"><BrandLogoPair showcase /><span>{isAr ? "رعاية متخصصة لصحة المرأة" : "SPECIALIST WOMEN'S HEALTHCARE"}</span></div>
-        <div className="home-hospital-copy"><div className="home-feature-index">03 <span>{t("pageHospital")}</span></div><div className="showcase-topic-list">{t("showcaseHospitalTopics").map((topic) => <span key={topic}>{topic}</span>)}</div><button className="showcase-primary-link" onClick={() => navigate("hospital")}>{t("showcaseHospitalAction")}<ArrowUpLeft size={15} /></button></div>
+      <div className="home-hospital-feature"><div className="home-hospital-image"><img src={HOSPITAL_IMAGE_URL} alt={isAr ? "مستشفى جنى لصحة المرأة" : "Ganna Women's Health Hospital"} /><span>{isAr ? "مستشفى جنى لصحة المرأة" : "GANNA WOMEN'S HEALTH HOSPITAL"}</span></div>
+        <div className="home-hospital-copy"><HospitalLogo /><div className="home-feature-index">02 <span>{t("pageHospital")}</span></div><div className="showcase-topic-list">{t("showcaseHospitalTopics").map((topic) => <span key={topic}>{topic}</span>)}</div><button className="showcase-primary-link" onClick={() => navigate("hospital")}><Hospital size={17} />{t("showcaseHospitalAction")}</button></div>
       </div>
     </section>
 
     <section className="home-resource-section home-ask-section section-wrap">
       <SectionHeading eyebrow={t("pageAsk")} title={t("askTitle")} text={t("showcaseAskText")} />
-      <div className="home-ask-feature"><div className="home-ask-icon"><CircleHelp size={29} /></div><div className="home-ask-copy"><div className="home-feature-index">04 <span>{t("pageAsk")}</span></div></div><button className="showcase-primary-link" onClick={() => navigate("ask")}>{t("showcaseAskAction")}<ArrowUpLeft size={15} /></button></div>
+      <div className="home-ask-feature"><div className="home-ask-icon"><CircleHelp size={29} /></div><div className="home-ask-copy"><div className="home-feature-index">03 <span>{t("pageAsk")}</span></div></div><button className="showcase-primary-link" onClick={() => navigate("ask")}><MessageCircle size={17} />{t("showcaseAskAction")}</button></div>
     </section>
 
-    <section className="closing-cta"><div className="cta-brand-watermark" aria-hidden="true"><BrandLogoPair showcase /></div><div className="eyebrow light-eyebrow"><span />{t("nextConference")}</div><h2>{t("ctaTitle")}</h2><p>{t("ctaText")}</p><button className="button button-light" onClick={() => navigate("register")}>{t("ctaButton")}<ArrowLeft size={17} /></button><div className="cta-date"><CalendarDays size={15} />{t("nextDate")}</div></section>
+    <section className="closing-cta"><div className="cta-brand-watermark" aria-hidden="true"><BrandLogoPair showcase /></div><div className="eyebrow light-eyebrow"><span />{t("nextConference")}</div><h2>{t("ctaTitle")}</h2><p>{t("ctaText")}</p><button className="button button-light" onClick={() => navigate("register")}><CalendarPlus size={18} />{t("ctaButton")}</button><div className="cta-date"><CalendarDays size={15} />{t("nextDate")}</div></section>
   </>;
+}
+
+function AnimatedStat({ item, index, lang }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (item.count == null || !element) return undefined;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+      setCount(item.count);
+      return undefined;
+    }
+
+    let animationFrame;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      const start = performance.now();
+      const duration = 1250;
+      const animate = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - (1 - progress) ** 4;
+        setCount(Math.round(item.count * eased));
+        if (progress < 1) animationFrame = requestAnimationFrame(animate);
+      };
+      animationFrame = requestAnimationFrame(animate);
+      observer.disconnect();
+    }, { threshold: 0.6 });
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
+  }, [item.count]);
+
+  const number = new Intl.NumberFormat(lang === "ar" ? "ar-EG" : "en-US").format(count);
+  const value = item.count == null ? item[lang === "ar" ? "value" : "enValue"] : `${number}${localized(item.suffix, lang)}`;
+  return <div ref={ref} className="stat-item"><span className="stat-index">0{index + 1}</span><strong aria-label={item[lang === "ar" ? "value" : "enValue"]}>{value}</strong><span>{item.label[lang]}</span></div>;
 }
 
 function SectionHeading({ eyebrow, title, text, action, onAction }) {
@@ -357,8 +388,8 @@ function secureCertificateUrl(value) {
   }
 }
 
-function PageIntro({ eyebrow, title, text, tone = "light" }) {
-  return <section className={`page-intro ${tone === "dark" ? "page-intro-dark" : ""}`}><div className="page-intro-inner"><div className="eyebrow"><span />{eyebrow}</div><h1>{title}</h1>{text && <p>{text}</p>}</div><div className="intro-decoration" aria-hidden="true"><BrandLogoPair showcase /></div></section>;
+function PageIntro({ eyebrow, title, text, tone = "light", hospitalBrand = false }) {
+  return <section className={`page-intro ${tone === "dark" ? "page-intro-dark" : ""}`}><div className="page-intro-inner"><div className="eyebrow"><span />{eyebrow}</div><h1>{title}</h1>{text && <p>{text}</p>}</div><div className={`intro-decoration ${hospitalBrand ? "hospital-intro-decoration" : ""}`} aria-hidden="true">{hospitalBrand ? <HospitalLogo /> : <BrandLogoPair showcase />}</div></section>;
 }
 
 function AboutPage({ t, lang, navigate, openModal, publicContent }) {
@@ -385,6 +416,14 @@ function AboutPage({ t, lang, navigate, openModal, publicContent }) {
 }
 
 function CertificatesPage({ t, lang, notify, openModal }) {
+  return <>
+    <PageIntro eyebrow={t("pageCertificates")} title={t("certTitle")} text={t("certText")} />
+    <section className="section-wrap certificate-section"><CertificateSearchPanel t={t} notify={notify} openModal={openModal} /></section>
+    <section className="privacy-callout section-wrap"><ShieldCheck size={21} /><p>{lang === "ar" ? "ملفات وبيانات الشهادات هنا تجريبية للعرض فقط. البحث بالاسم لا يثبت الهوية؛ يلزم Backend آمن للشهادات الحقيقية." : "Certificate files and records here are demo-only. Name search does not verify identity; real certificates require a secure backend."}</p></section>
+  </>;
+}
+
+function CertificateSearchPanel({ t, notify, openModal, compact = false }) {
   const [name, setName] = useState("");
   const [type, setType] = useState("all");
   const [phone, setPhone] = useState("");
@@ -399,9 +438,7 @@ function CertificatesPage({ t, lang, notify, openModal }) {
     finally { setLoading(false); }
   }
   const demoResults = results?.some((item) => item.isDemo);
-  return <>
-    <PageIntro eyebrow={t("pageCertificates")} title={t("certTitle")} text={t("certText")} />
-    <section className="section-wrap certificate-section">
+  return <div className={`certificate-search-content ${compact ? "certificate-search-compact" : ""}`}>
       <div className="certificate-panel">
         <div className="certificate-panel-icon"><Award size={28} /></div>
         <div className="eyebrow"><span />{t("certificates")}</div>
@@ -417,16 +454,14 @@ function CertificatesPage({ t, lang, notify, openModal }) {
             <div className="input-with-icon"><Search size={17} /><input value={name} onChange={(event) => setName(event.target.value)} placeholder={t("namePlaceholder")} required /></div>
           </label>
           {type === "cme" && <label>{t("registeredPhone")}<input type="tel" inputMode="numeric" autoComplete="tel-national" value={phone} onChange={(event) => setPhone(normalizeEgyptianMobile(event.target.value))} placeholder={t("phonePlaceholder")} pattern={EGYPTIAN_MOBILE_PATTERN} title={t("phoneError")} required /></label>}
-          <button className="button button-red" type="submit" disabled={loading}>{loading ? t("searching") : t("certSearch")}<ArrowLeft size={17} /></button>
+          <button className="button button-red" type="submit" disabled={loading}><Search size={17} />{loading ? t("searching") : t("certSearch")}</button>
         </form>
       </div>
       {results && <div className="certificate-results">
         <div className="results-heading"><h2>{t("certFound")} <span>{results.length}</span></h2><p>{demoResults ? t("demoUnavailable") : t("secureCertificateNote")}</p></div>
         {results.length ? results.map((item) => <CertificateResult key={item.id} item={item} t={t} notify={notify} openModal={openModal} />) : <div className="empty-state"><Search size={21} /><p>{t("noCert")}</p></div>}
       </div>}
-    </section>
-    <section className="privacy-callout section-wrap"><ShieldCheck size={21} /><p>{lang === "ar" ? "ملفات وبيانات الشهادات هنا تجريبية للعرض فقط. البحث بالاسم لا يثبت الهوية؛ يلزم Backend آمن للشهادات الحقيقية." : "Certificate files and records here are demo-only. Name search does not verify identity; real certificates require a secure backend."}</p></section>
-  </>;
+  </div>;
 }
 
 function CertificateResult({ item, t, notify, openModal }) {
@@ -477,8 +512,9 @@ function LecturesPage({ t, lang, openModal, items }) {
   const dimensionKey = { specialty: "specialty", speaker: "speaker", session: "session" }[dimension];
   const options = [...new Set(items.map((item) => localized(item[dimensionKey], lang)))];
   const allLabel = { specialty: t("allSpecialties"), speaker: t("allSpeakers"), session: t("allSessions") }[dimension];
+  const displayOption = (item) => lang === "en" && item.length > 35 ? `${item.substring(0, 35)}...` : item;
   const filtered = filter === "all" ? items : items.filter((item) => localized(item[dimensionKey], lang) === filter);
-  return <><PageIntro eyebrow={t("pageLectures")} title={t("lecturePageTitle")} text={lang === "ar" ? "ملخصات منظمة للمحاضرات العلمية، دون نشر ملفات العروض التقديمية." : "Curated summaries of scientific presentations, without publishing original slide decks."} /><section className="section-wrap lectures-page-section"><div className="lecture-filter"><label>{t("filterBy")}<select value={dimension} onChange={(e) => { setDimension(e.target.value); setFilter("all"); }}><option value="specialty">{t("filterSpecialty")}</option><option value="speaker">{t("filterSpeaker")}</option><option value="session">{t("filterSession")}</option></select></label><select aria-label={allLabel} value={filter} onChange={(e) => setFilter(e.target.value)}><option value="all">{allLabel}</option>{options.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>{filtered.length ? <div className="lecture-grid">{filtered.map((lecture, index) => <LectureCard key={lecture.id} lecture={lecture} lang={lang} index={index} t={t} onClick={() => openModal({ kind: "lecture", record: lecture })} />)}</div> : <div className="empty-state">{t("noLectures")}</div>}</section></>;
+  return <><PageIntro eyebrow={t("pageLectures")} title={t("lecturePageTitle")} text={lang === "ar" ? "دليل كامل للجلسات والمتحدثين كما وردوا في برنامج المؤتمر، موزع على القاعات الأربع." : "The complete session and speaker directory from the conference programme across all four halls."} /><section className="section-wrap lectures-page-section"><div className="lecture-filter"><label>{t("filterBy")}<select value={dimension} onChange={(e) => { setDimension(e.target.value); setFilter("all"); }}><option value="specialty">{t("filterSpecialty")}</option><option value="speaker">{t("filterSpeaker")}</option><option value="session">{t("filterSession")}</option></select></label><select aria-label={allLabel} value={filter} onChange={(e) => setFilter(e.target.value)}><option value="all">{allLabel}</option>{options.map((item) => <option key={item} value={item}>{displayOption(item)}</option>)}</select></div>{filtered.length ? <div className="lecture-grid">{filtered.map((lecture, index) => <LectureCard key={lecture.id} lecture={lecture} lang={lang} index={index} t={t} onClick={() => openModal({ kind: "lecture", record: lecture })} />)}</div> : <div className="empty-state">{t("noLectures")}</div>}</section></>;
 }
 
 function GuidelinesPage({ t, platformUrl }) {
@@ -489,7 +525,7 @@ function langText(en, ar) { return document.documentElement.lang === "ar" ? ar :
 
 function HospitalPage({ t, lang, profile }) {
   const services = profile?.serviceList ? profile.serviceList.split(/\n|،|,/).map((item) => item.trim()).filter(Boolean) : [t("service1"), t("service2"), t("service3"), t("service4")];
-  return <><PageIntro eyebrow={t("pageHospital")} title={localized(profile?.title, lang) || t("hospitalTitle")} text={t("hospitalText")} /><section className="hospital-feature"><div className="hospital-feature-image"><img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1500&q=85" alt="" /><div className="hospital-image-caption"><Hospital size={21} /><span>{t("pageHospital")}</span></div></div><div className="hospital-feature-copy"><div className="eyebrow"><span />{t("hospitalVision")}</div><h2>{localized(profile?.vision, lang) || t("hospitalVisionText")}</h2><p>{localized(profile?.mission, lang) || t("hospitalText")}</p></div></section><section className="section-wrap hospital-services"><SectionHeading eyebrow={t("pageHospital")} title={t("hospitalServices")} /><div className="services-grid">{services.map((service, i) => <div key={`${service}-${i}`} className="service-card"><span>{[<Stethoscope />, <Baby />, <HeartPulse />, <Users />][i % 4]}</span><small>{String(i + 1).padStart(2, "0")}</small><strong>{service}</strong><ArrowUpLeft size={16} /></div>)}</div></section></>;
+  return <><PageIntro eyebrow={t("pageHospital")} title={localized(profile?.title, lang) || t("hospitalTitle")} text={t("hospitalText")} hospitalBrand /><section className="hospital-feature"><div className="hospital-feature-image"><img src={HOSPITAL_IMAGE_URL} alt="" /><div className="hospital-image-caption"><Hospital size={21} /><span>{t("pageHospital")}</span></div></div><div className="hospital-feature-copy"><div className="eyebrow"><span />{t("hospitalVision")}</div><h2>{localized(profile?.vision, lang) || t("hospitalVisionText")}</h2><p>{localized(profile?.mission, lang) || t("hospitalText")}</p></div></section><section className="section-wrap hospital-services"><SectionHeading eyebrow={t("pageHospital")} title={t("hospitalServices")} /><div className="services-grid">{services.map((service, i) => <div key={`${service}-${i}`} className="service-card"><span>{[<Stethoscope />, <Baby />, <HeartPulse />, <Users />][i % 4]}</span><small>{String(i + 1).padStart(2, "0")}</small><strong>{service}</strong><ArrowUpLeft size={16} /></div>)}</div></section></>;
 }
 
 function FormSuccess({ t, record, isQuestion }) {
@@ -508,7 +544,7 @@ function AskPage({ t, lang, notify }) {
     catch (error) { notify(error.message || t("toastError")); }
     finally { setLoading(false); }
   }
-  return <><PageIntro eyebrow={t("pageAsk")} title={t("askTitle")} text={t("askText")} /><section className="section-wrap form-layout"><div className="form-aside"><div className="aside-icon"><CircleHelp size={25} /></div><h2>{lang === "ar" ? "سؤالك قد يفتح بابًا لمعرفة جديدة." : "Your question might open a door to new understanding."}</h2><p>{t("privateNote")}</p><div className="aside-note"><ShieldCheck size={18} /><span>{t("questionDisclaimer")}</span></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} isQuestion /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 02</span><h2>{lang === "ar" ? "أخبرنا كيف نساعدك." : "Tell us how we can help."}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required placeholder={lang === "ar" ? "الاسم كما تحب أن نناديك" : "How should we address you?"} /><FormField label={t("email")} name="email" type="email" required placeholder="name@example.com" /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><label className="field full-field">{t("yourQuestion")}<textarea name="question" required rows="5" placeholder={t("questionPlaceholder")} maxLength="2000" /></label></div><label className="consent-row"><input type="checkbox" required /><span>{t("dataUseConsent")}</span></label><p className="form-disclaimer">{t("questionDisclaimer")}</p><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitQuestion")}<ArrowLeft size={17} /></button></form>}</div></section></>;
+  return <><PageIntro eyebrow={t("pageAsk")} title={t("askTitle")} text={t("askText")} /><section className="section-wrap form-layout"><div className="form-aside"><div className="aside-icon"><CircleHelp size={25} /></div><h2>{lang === "ar" ? "سؤالك قد يفتح بابًا لمعرفة جديدة." : "Your question might open a door to new understanding."}</h2><p>{t("privateNote")}</p><div className="aside-note"><ShieldCheck size={18} /><span>{t("questionDisclaimer")}</span></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} isQuestion /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 02</span><h2>{lang === "ar" ? "أخبرنا كيف نساعدك." : "Tell us how we can help."}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required placeholder={lang === "ar" ? "الاسم كما تحب أن نناديك" : "How should we address you?"} /><FormField label={t("email")} name="email" type="email" required placeholder="name@example.com" /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><label className="field full-field">{t("yourQuestion")}<textarea name="question" required rows="5" placeholder={t("questionPlaceholder")} maxLength="2000" /></label></div><label className="consent-row"><input type="checkbox" required /><span>{t("dataUseConsent")}</span></label><p className="form-disclaimer">{t("questionDisclaimer")}</p><button className="button button-red form-submit" type="submit" disabled={loading}><MessageCircle size={17} />{loading ? t("submitting") : t("submitQuestion")}</button></form>}</div></section></>;
 }
 
 function FormField({ label, name, type = "text", required = false, placeholder = "", dir, lang }) {
@@ -543,7 +579,7 @@ function RegistrationPage({ t, lang, notify }) {
     catch (error) { notify(error.message || t("toastError")); }
     finally { setLoading(false); }
   }
-  return <><PageIntro eyebrow={t("pageRegister")} title={t("registerTitle")} text={t("registerText")} /><section className="section-wrap form-layout registration-layout"><div className="form-aside register-aside"><div className="aside-icon"><FileCheck2 size={25} /></div><h2>{langText("A few details. A meaningful step.", "بيانات بسيطة، وخطوة لها معنى.")}</h2><p>{t("approvalNote")}</p><div className="registration-steps"><div><span>01</span>{t("fullName")}</div><div><span>02</span>{t("participantType")}</div><div><span>03</span>{t("uploadDocument")}</div></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 03</span><h2>{langText("Your information", "بياناتك الشخصية")}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><FormField label={t("email")} name="email" type="email" required /><label className="field">{t("participantType")}<select name="participantType" required value={participant} onChange={(e) => setParticipant(e.target.value)}><option value="">{t("choose")}</option><option value="doctor">{t("doctor")}</option><option value="student">{t("student")}</option></select></label><label className="field full-field">{t("uploadDocument")}<span className="upload-hint">{participant === "student" ? t("student") : t("doctor")} · {t("uploadHint")}</span><span className="upload-control"><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={handleFile} required /><span className="upload-button"><FileCheck2 size={16} />{t("selectFile")}</span><span className="upload-name">{file?.name || t("documentRequired")}</span></span></label></div>{fileError && <p className="field-error" role="alert">{fileError}</p>}<label className="consent-row"><input type="checkbox" required /><span>{t("registrationConsent")}</span></label><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitRegistration")}<ArrowLeft size={17} /></button></form>}</div></section></>;
+  return <><PageIntro eyebrow={t("pageRegister")} title={t("registerTitle")} text={t("registerText")} /><section className="section-wrap form-layout registration-layout"><div className="form-aside register-aside"><div className="aside-icon"><FileCheck2 size={25} /></div><h2>{langText("A few details. A meaningful step.", "بيانات بسيطة، وخطوة لها معنى.")}</h2><p>{t("approvalNote")}</p><div className="registration-steps"><div><span>01</span>{t("fullName")}</div><div><span>02</span>{t("participantType")}</div><div><span>03</span>{t("uploadDocument")}</div></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 03</span><h2>{langText("Your information", "بياناتك الشخصية")}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><FormField label={t("email")} name="email" type="email" required /><label className="field">{t("participantType")}<select name="participantType" required value={participant} onChange={(e) => setParticipant(e.target.value)}><option value="">{t("choose")}</option><option value="doctor">{t("doctor")}</option><option value="student">{t("student")}</option></select></label><label className="field full-field">{t("uploadDocument")}<span className="upload-hint">{participant === "student" ? t("student") : t("doctor")} · {t("uploadHint")}</span><span className="upload-control"><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={handleFile} required /><span className="upload-button"><FileCheck2 size={16} />{t("selectFile")}</span><span className="upload-name">{file?.name || t("documentRequired")}</span></span></label></div>{fileError && <p className="field-error" role="alert">{fileError}</p>}<label className="consent-row"><input type="checkbox" required /><span>{t("registrationConsent")}</span></label><button className="button button-red form-submit" type="submit" disabled={loading}><ClipboardList size={17} />{loading ? t("submitting") : t("submitRegistration")}</button></form>}</div></section></>;
 }
 
 function ContactPage({ t }) {
@@ -646,7 +682,7 @@ function AdminPage({ t, lang, onExit }) {
 
   return <div className="admin-shell">
     <aside className="admin-sidebar">
-      <button className="admin-brand" onClick={() => setTab("dashboard")}><img className="admin-brand-logo" src={brandLogos.mainLight} alt="Ganna Conference" /><strong><small>CONFERENCE PORTAL</small></strong></button>
+      <button className="admin-brand" onClick={() => setTab("dashboard")}><span className="admin-brand-logos"><img className="admin-brand-logo brand-logo-dark" src={brandLogos.companyLight} alt="Innovators for Organizing Conferences" /><img className="admin-brand-logo brand-logo-light" src={brandLogos.companyDark} alt="Innovators for Organizing Conferences" /><span className="brand-logo-divider" /><img className="admin-brand-logo admin-conference-logo" src={brandLogos.mainDark} alt="Ganna Conference" /></span><strong><small>CONFERENCE PORTAL</small></strong></button>
       <div className="admin-nav-groups">{adminSections.map((section) => <div className="admin-nav-group" key={section.group}><div className="admin-side-label">{a(section.group)}</div>{section.items.map((item) => { const Icon = adminIcons[item]; return <button className={tab === item ? "admin-side-link selected" : "admin-side-link"} key={item} onClick={() => { setTab(item); setQuery(""); setSelectedRecord(null); }}><Icon size={17} /><span>{a(item)}</span>{item === "questions" && openCount > 0 && <small>{openCount}</small>}</button>; })}</div>)}</div>
       <div className="admin-sidebar-bottom"><span className="admin-status-dot" /><span>{a("liveDemo")}</span></div>
       <button className="admin-exit-link" onClick={onExit}><ArrowLeft size={15} />{a("backToSite")}</button>
@@ -823,16 +859,23 @@ function RoleMatrix({ a, lang }) {
 }
 
 function Footer({ t, lang, navigate }) {
-  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button className="brand brand-pair" onClick={() => navigate("home")} aria-label="Ganna Conference and Hospitals home"><BrandLogoPair /></button><p>{t("footerText")}</p><div className="footer-socials"><a href="mailto:marketing4@innovatorsgroup.org" aria-label="Email"><Mail size={16} /></a><button aria-label="Social media" onClick={() => navigate("contact")}><ExternalLink size={16} /></button></div></div><div className="footer-links"><strong>{t("quickLinks")}</strong><div>{["about", "lectures", "certificates", "gallery"].map((item) => <button key={item} onClick={() => navigate(item)}>{labels[lang][item]}</button>)}</div></div><div className="footer-links"><strong>{t("contactUs")}</strong><div><button onClick={() => navigate("contact")}>{labels[lang].contact}</button><button onClick={() => navigate("ask")}>{labels[lang].ask}</button>{!import.meta.env.PROD && <button onClick={() => navigate("admin")}>{t("admin")}</button>}</div></div><div className="footer-next"><span>{t("nextConference")}</span><strong>{conferences[0].title[lang]}</strong><small>{conferences[0].date[lang]}</small><button onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {t("rights")}</span><span>{t("followUs")} <span className="footer-dot">✳</span></span></div></footer>;
+  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button className="brand brand-pair" onClick={() => navigate("home")} aria-label="Innovators and Ganna Conference home"><BrandLogoPair /></button><p>{t("footerText")}</p><div className="footer-socials"><a href="mailto:marketing4@innovatorsgroup.org" aria-label="Email"><Mail size={16} /></a><button aria-label="Social media" onClick={() => navigate("contact")}><ExternalLink size={16} /></button></div></div><div className="footer-links"><strong>{t("quickLinks")}</strong><div>{["about", "lectures", "certificates", "gallery"].map((item) => <button key={item} onClick={() => navigate(item)}>{labels[lang][item]}</button>)}</div></div><div className="footer-links"><strong>{t("contactUs")}</strong><div><button onClick={() => navigate("contact")}>{labels[lang].contact}</button><button onClick={() => navigate("ask")}>{labels[lang].ask}</button>{!import.meta.env.PROD && <button onClick={() => navigate("admin")}>{t("admin")}</button>}</div></div><div className="footer-next"><span>{t("nextConference")}</span><strong>{conferences[0].title[lang]}</strong><small>{conferences[0].date[lang]}</small><button onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {t("rights")}</span><span>{t("followUs")} <span className="footer-dot">✳</span></span></div></footer>;
 }
 
 function BrandLogoPair({ showcase = false }) {
-  return <span className={`brand-logo-pair ${showcase ? "showcase-hospital-logos" : ""}`}>
-    <img className="brand-logo brand-logo-dark brand-logo-main" src={brandLogos.mainDark} alt="Ganna Conference" />
-    <img className="brand-logo brand-logo-light brand-logo-main" src={brandLogos.mainLight} alt="Ganna Conference" />
+  return <span className={`brand-logo-pair ${showcase ? "showcase-brand-logos" : ""}`}>
+    <img className="brand-logo brand-logo-dark brand-logo-company" src={brandLogos.companyLight} alt="Innovators for Organizing Conferences" />
+    <img className="brand-logo brand-logo-light brand-logo-company" src={brandLogos.companyDark} alt="Innovators for Organizing Conferences" />
     <span className="brand-logo-divider" />
-    <img className="brand-logo brand-logo-dark brand-logo-hospital" src={brandLogos.hospitalLight} alt="Ganna Hospitals" />
-    <img className="brand-logo brand-logo-light brand-logo-hospital" src={brandLogos.hospitalDark} alt="Ganna Hospitals" />
+    <img className="brand-logo brand-logo-dark brand-logo-conference" src={brandLogos.mainLight} alt="Ganna Conference" />
+    <img className="brand-logo brand-logo-light brand-logo-conference" src={brandLogos.mainDark} alt="Ganna Conference" />
+  </span>;
+}
+
+function HospitalLogo() {
+  return <span className="hospital-logo-pair">
+    <img className="brand-logo brand-logo-dark" src={brandLogos.hospitalLight} alt="Ganna Hospitals" />
+    <img className="brand-logo brand-logo-light" src={brandLogos.hospitalDark} alt="Ganna Hospitals" />
   </span>;
 }
 
@@ -845,7 +888,7 @@ function Modal({ modal, t, close, lang }) {
         <button className="modal-close" onClick={close} aria-label={t("close")}><X size={18} /></button>
         {kind === "lecture" && <>
           <div className="modal-image"><img src={record.image} alt="" /></div>
-          <div className="modal-body"><div className="eyebrow"><span />{localized(record.specialty, lang)}</div><h2>{title}</h2><p className="modal-speaker">{t("speaker")}: {localized(record.speaker, lang)} · {localized(record.session, lang)}</p><h3>{t("lectureOverview")}</h3><p>{localized(record.summary, lang)}</p><h3>{t("keyTopics")}</h3><ul>{(record.topics?.[lang] || []).map((topic) => <li key={topic}>{topic}</li>)}</ul><div className="takeaway"><Sparkles size={18} /><p><strong>{t("keyTakeaway")}</strong>{t("takeawayText")}</p></div></div>
+          <div className="modal-body"><div className="eyebrow"><span />{localized(record.specialty, lang)}</div><h2>{title}</h2><p className="modal-speaker">{t("speaker")}: {localized(record.speaker, lang)} · {localized(record.session, lang)}</p><h3>{t("lectureOverview")}</h3><p>{localized(record.summary, lang)}</p></div>
         </>}
         {kind === "image" && <><img src={record.image} alt={title} /><div className="image-modal-caption"><span>{localized(record.category, lang)}</span><strong>{title}</strong></div></>}
         {kind === "video" && <><div className="video-modal-poster"><img src={record.image} alt="" /><span className="play-button"><Play size={19} fill="currentColor" /></span></div><div className="modal-body"><div className="eyebrow"><span />{localized(record.speaker, lang)}</div><h2>{title}</h2><p>{t("videoDemo")}</p></div></>}

@@ -67,13 +67,17 @@
 .site-shell.is-ltr .lucide-arrow-left {
   transform: scaleX(-1);
 }
-
+.site-shell.is-ltr .home-hospital-copy .hospital-logo-pair .brand-logo {
+  padding-left: 35px;
+}
 @media (max-width: 850px) {
   .site-shell.is-ltr .hero-content {
     width: min(100%, 740px);
     max-width: 740px;
   }
-
+.site-shell.is-ltr .home-hospital-copy .hospital-logo-pair .brand-logo {
+    padding: 0;
+}
   .site-shell.is-ltr .hero-image {
     inset: 0 0 0 18%;
   }
@@ -321,6 +325,15 @@ html[data-theme="dark"] .site-shell.is-ltr .form-grid .field select {
 
 .site-shell.is-ltr .intro-decoration {
   display: none;
+}
+
+.site-shell.is-ltr .intro-decoration.hospital-intro-decoration {
+  display: grid;
+  opacity: .34;
+}
+
+.site-shell.is-ltr .hospital-intro-decoration .hospital-logo-pair {
+  width: clamp(125px, 16vw, 185px);
 }
 
 .site-shell.is-ltr .gallery-card-overlay {
@@ -611,7 +624,7 @@ html[data-theme="dark"] .site-shell.is-ltr .form-grid .field select {
 
   .site-shell.is-ltr .hero-image {
     inset: 0;
-    background-position: 0 0, 42% center;
+    background-position: 0 0, 88% center;
     animation: none;
     transform: none;
   }

@@ -137,7 +137,17 @@ html[data-theme="light"] .site-shell.is-rtl .hero-image {
     inset: 0 34% 0 0;
     z-index: -2;
 
-    background-image:linear-gradient(270deg, #183547 0%, #183547d9 23%, #18354733 72%, #0b16261f 100%), url("./assets/lecture-1.webp");
+   transform: scaleX(-1);
+    background-image:linear-gradient(90deg, #183547 0%, #183547d9 23%, #18354733 72%, #0b16261f 100%), url("./assets/lecture-1.webp");
+}
+.site-shell.is-rtl .home-hospital-copy .hospital-logo-pair .brand-logo {
+  padding-right: 35px;
+}
+.site-shell.is-rtl .showcase-primary-link {
+  padding-left: 25px;
+}
+.site-shell.is-rtl .button-light {
+     padding-left: 25px;
 }
 @media (max-width: 620px) {
   .site-shell.is-rtl .hero-image {
@@ -145,7 +155,9 @@ html[data-theme="light"] .site-shell.is-rtl .hero-image {
     transform: none;
     inset: 0 !important;
   }
-
+.site-shell.is-rtl .home-hospital-copy .hospital-logo-pair .brand-logo {
+    padding: 0;
+}
   .site-shell.is-rtl .about-preview {
     display: flex;
     flex-direction: column-reverse;

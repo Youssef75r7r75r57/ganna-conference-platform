@@ -39,7 +39,7 @@ The admin preview includes the conference, certificates, gallery, videos, lectur
 
 ## Demo content
 
-The conference date, venue, edition, and programme themes come from `GANNA ATTAGLANCE.pdf`. Lecture descriptions, video entries, and certificate records are explicitly illustrative frontend samples. The five supplied root-level photos are used in lecture cards; every photo in `data/` is included in the gallery. The conference and hospital logo pairs are optimized into `src/assets/` and displayed together across the public site.
+The conference date, venue, edition, and 55 programme entries (including their listed speakers, halls, and times) come from `GANNA ATTAGLANCE.pdf`. The lecture cards use the five supplied root-level photos as illustrative artwork; they do not represent individual speakers or sessions. Video entries and certificate records are also illustrative frontend samples. Every photo in `data/` is included in the gallery. The conference and hospital logo pairs are optimized into `src/assets/` and displayed across the public site.
 
 The home page's Explore section highlights conference videos, medical guidelines, Ganna Hospital services, and questions for the conference team. Lecture and gallery previews are grouped in the About page, alongside the conference story and goals. Contact is a primary navigation link and has its own page.
 

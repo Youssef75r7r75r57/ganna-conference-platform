@@ -8,11 +8,15 @@ test("public demo content reflects the supplied 2026 conference programme", asyn
   assert.equal(content.conferences[0].title.en, "Ganna 15th Scientific Conference");
   assert.equal(content.conferences[0].eventDate.en, "23 October 2026");
   assert.equal(content.conferences[0].location.en, "Semiramis InterContinental, Cairo");
-  assert.equal(content.lectures.length, 5);
+  assert.equal(content.lectures.length, 55);
   assert.equal(content.gallery.length, 5);
   assert.ok(content.gallery.every((item) => item.image.includes("gallery-")));
   assert.equal(content.guidelines[0].url, GUIDELINES_PLATFORM_URL);
   assert.ok(content.lectures.every((lecture) => lecture.specialty.en !== "Pediatrics"));
+  assert.equal(new Set(content.lectures.map((lecture) => lecture.id)).size, 55);
+  assert.equal(content.lectures.find((lecture) => lecture.id === "obesity-pregnancy").speaker.en, "Dr. Mohamed Magdy");
+  assert.equal(content.lectures.find((lecture) => lecture.id === "fetal-echo-cardiac-anomalies").speaker.en, "Dr. Monira Aly");
+  assert.ok(content.lectures.every((lecture) => lecture.time && lecture.session.en && lecture.speaker.en));
 });
 
 test("CME demo certificate search requires the English name and phone number", async () => {
