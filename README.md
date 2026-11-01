@@ -2,6 +2,10 @@
 
 Responsive Arabic/English React frontend for the Ganna conference requirements.
 
+The interface supports the requested light and dark palettes and follows the operating system's color-scheme preference automatically, including changes made while the page is open. Content sections animate into view, and animations respect the operating system's reduced-motion preference. Egyptian mobile numbers in the question and registration forms must contain 11 digits and start with 010, 011, 012, or 015.
+
+Styling is organized into a shared layout/theme stylesheet (`src/styles.css`) and separate Arabic and English locale stylesheets (`src/styles.ar.css` and `src/styles.en.css`). Locale-specific rules are scoped to the active language, so changing the language does not mix its typography or directional adjustments with the other locale.
+
 ## Run locally
 
 ```sh

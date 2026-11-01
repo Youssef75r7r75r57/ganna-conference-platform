@@ -3,11 +3,12 @@ import {
   Activity, ArrowDown, ArrowLeft, ArrowUpLeft, Award, Baby, BookOpen,
   CalendarDays, Check, ChevronDown, CircleHelp, ClipboardList, ExternalLink,
   FileCheck2, HeartPulse, Hospital, Image as ImageIcon, Languages, Link2, Mail,
-  MapPin, Menu, Play, Plus, Search, Settings, Shield, ShieldCheck, Sparkles,
+  MapPin, Menu, Phone, Play, Plus, Search, Settings, Shield, ShieldCheck, Sparkles,
   Stethoscope, UserCog, Users, Video, X,
 } from "lucide-react";
 import { api } from "./api.js";
 import { conferences, gallery, labels, lectures, stats, videos } from "./data.js";
+import { EGYPTIAN_MOBILE_PATTERN, normalizeEgyptianMobile } from "./phone.js";
 
 const copy = {
   ar: {
@@ -105,6 +106,7 @@ const adminCopy = {
 
 function App() {
   const [lang, setLang] = useState("ar");
+  const [theme, setTheme] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   const [page, setPage] = useState("home");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -125,6 +127,39 @@ function App() {
       window.removeEventListener("ganna-demo-content-updated", refreshContent);
     };
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#0a111c" : "#f1f4f7");
+  }, [theme]);
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncTheme = (event) => setTheme(event.matches ? "dark" : "light");
+    setTheme(preference.matches ? "dark" : "light");
+    preference.addEventListener("change", syncTheme);
+    return () => preference.removeEventListener("change", syncTheme);
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    if (!("IntersectionObserver" in window)) return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -30px 0px" });
+    const targets = document.querySelectorAll("main .stat-item, main .about-preview-copy, main .lecture-card, main .gallery-tile, main .guideline-banner, main .closing-cta, main .goal-item, main .values-row > div, main .video-card, main .gallery-card, main .service-card, main .contact-card, main .privacy-item, main .certificate-panel, main .form-card, main .admin-panel, main .admin-metric-card");
+    targets.forEach((target) => {
+      target.classList.add("reveal-on-scroll");
+      observer.observe(target);
+    });
+    return () => observer.disconnect();
+  }, [page]);
 
   function notify(message) {
     setToast(message);
@@ -161,10 +196,22 @@ function App() {
             <button key={key} className={page === key ? "nav-link active" : "nav-link"} onClick={() => navigate(key)}>{navLabel(key)}</button>
           ))}
           <div className="more-wrap">
-            <button className="nav-link more-trigger" onClick={() => setMoreOpen(!moreOpen)} aria-expanded={moreOpen}>
-              {isAr ? "المزيد" : "More"} <ChevronDown size={14} />
+            <button className="nav-link more-trigger" onClick={() => setMoreOpen(!moreOpen)} aria-expanded={moreOpen} aria-controls="more-navigation">
+              <Sparkles size={14} aria-hidden="true" />
+              <span>{isAr ? "المزيد" : "Explore"}</span>
+              <ChevronDown size={14} aria-hidden="true" />
             </button>
-            {moreOpen && <div className="more-menu">{moreNav.map((key) => <button key={key} onClick={() => navigate(key)}>{navLabel(key)}<ArrowUpLeft size={14} /></button>)}<button onClick={() => navigate("admin")}>{t("admin")}<ArrowUpLeft size={14} /></button></div>}
+            {moreOpen && (
+              <div className="more-menu" id="more-navigation">
+                <div className="more-menu-heading">
+                  <span><Sparkles size={14} />{isAr ? "استكشف جنى" : "EXPLORE GANNA"}</span>
+                  <p>{isAr ? "كل ما تحتاج معرفته عن المؤتمر" : "More ways to connect with the conference"}</p>
+                </div>
+                <div className="more-menu-links">
+                  {moreNav.map((key) => <button key={key} onClick={() => navigate(key)}>{navLabel(key)}<ArrowUpLeft size={14} /></button>)}
+                </div>
+              </div>
+            )}
           </div>
           <button className="nav-link admin-nav" onClick={() => navigate("admin")}>{t("admin")}</button>
         </nav>
@@ -343,11 +390,13 @@ function AskPage({ t, lang, notify }) {
     catch (error) { notify(error.message || t("toastError")); }
     finally { setLoading(false); }
   }
-  return <><PageIntro eyebrow={t("pageAsk")} title={t("askTitle")} text={t("askText")} /><section className="section-wrap form-layout"><div className="form-aside"><div className="aside-icon"><CircleHelp size={25} /></div><h2>{lang === "ar" ? "سؤالك قد يفتح بابًا لمعرفة جديدة." : "Your question might open a door to new understanding."}</h2><p>{t("privateNote")}</p><div className="aside-note"><ShieldCheck size={18} /><span>{t("questionDisclaimer")}</span></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} isQuestion /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 02</span><h2>{lang === "ar" ? "أخبرنا كيف نساعدك." : "Tell us how we can help."}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required placeholder={lang === "ar" ? "الاسم كما تحب أن نناديك" : "How should we address you?"} /><FormField label={t("email")} name="email" type="email" required placeholder="name@example.com" /><FormField label={t("phone")} name="phone" type="tel" required dir="ltr" placeholder="+20 100 000 0000" /><label className="field full-field">{t("yourQuestion")}<textarea name="question" required rows="5" placeholder={t("questionPlaceholder")} maxLength="2000" /></label></div><label className="consent-row"><input type="checkbox" required /><span>{t("consentPrivacy")}</span></label><p className="form-disclaimer">{t("questionDisclaimer")}</p><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitQuestion")}<ArrowLeft size={17} /></button></form>}</div></section></>;
+  return <><PageIntro eyebrow={t("pageAsk")} title={t("askTitle")} text={t("askText")} /><section className="section-wrap form-layout"><div className="form-aside"><div className="aside-icon"><CircleHelp size={25} /></div><h2>{lang === "ar" ? "سؤالك قد يفتح بابًا لمعرفة جديدة." : "Your question might open a door to new understanding."}</h2><p>{t("privateNote")}</p><div className="aside-note"><ShieldCheck size={18} /><span>{t("questionDisclaimer")}</span></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} isQuestion /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 02</span><h2>{lang === "ar" ? "أخبرنا كيف نساعدك." : "Tell us how we can help."}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required placeholder={lang === "ar" ? "الاسم كما تحب أن نناديك" : "How should we address you?"} /><FormField label={t("email")} name="email" type="email" required placeholder="name@example.com" /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><label className="field full-field">{t("yourQuestion")}<textarea name="question" required rows="5" placeholder={t("questionPlaceholder")} maxLength="2000" /></label></div><label className="consent-row"><input type="checkbox" required /><span>{t("consentPrivacy")}</span></label><p className="form-disclaimer">{t("questionDisclaimer")}</p><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitQuestion")}<ArrowLeft size={17} /></button></form>}</div></section></>;
 }
 
-function FormField({ label, name, type = "text", required = false, placeholder = "", dir }) {
-  return <label className="field">{label}<input name={name} type={type} required={required} placeholder={placeholder} dir={dir} autoComplete={name === "email" ? "email" : name === "phone" ? "tel" : "name"} /></label>;
+function FormField({ label, name, type = "text", required = false, placeholder = "", dir, lang }) {
+  const isPhone = name === "phone";
+  const phoneError = lang === "ar" ? "أدخل رقم محمول مصري صحيحًا من 11 رقمًا يبدأ بـ 010 أو 011 أو 012 أو 015." : "Enter an 11-digit Egyptian mobile number starting with 010, 011, 012, or 015.";
+  return <label className="field">{label}{isPhone ? <span className="phone-input-wrap" dir="ltr"><Phone size={16} aria-hidden="true" /><input name={name} type={type} required={required} placeholder={placeholder} dir="ltr" inputMode="numeric" autoComplete="tel-national" pattern={EGYPTIAN_MOBILE_PATTERN} title={phoneError} onInput={(event) => { event.currentTarget.value = normalizeEgyptianMobile(event.currentTarget.value); event.currentTarget.setCustomValidity(""); }} onInvalid={(event) => event.currentTarget.setCustomValidity(phoneError)} /></span> : <input name={name} type={type} required={required} placeholder={placeholder} dir={dir} autoComplete={name === "email" ? "email" : "name"} />}{isPhone && <small className="phone-hint">{lang === "ar" ? "11 رقمًا، يبدأ بـ 010 أو 011 أو 012 أو 015" : "11 digits, starting with 010, 011, 012, or 015"}</small>}</label>;
 }
 
 function RegistrationPage({ t, lang, notify }) {
@@ -376,7 +425,7 @@ function RegistrationPage({ t, lang, notify }) {
     catch (error) { notify(error.message || t("toastError")); }
     finally { setLoading(false); }
   }
-  return <><PageIntro eyebrow={t("pageRegister")} title={t("registerTitle")} text={t("registerText")} /><section className="section-wrap form-layout registration-layout"><div className="form-aside register-aside"><div className="aside-icon"><FileCheck2 size={25} /></div><h2>{langText("A few details. A meaningful step.", "بيانات بسيطة، وخطوة لها معنى.")}</h2><p>{t("approvalNote")}</p><div className="registration-steps"><div><span>01</span>{t("fullName")}</div><div><span>02</span>{t("participantType")}</div><div><span>03</span>{t("uploadDocument")}</div></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 03</span><h2>{langText("Your information", "بياناتك الشخصية")}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required /><FormField label={t("phone")} name="phone" type="tel" required dir="ltr" placeholder="+20 100 000 0000" /><FormField label={t("email")} name="email" type="email" required /><label className="field">{t("participantType")}<select name="participantType" required value={participant} onChange={(e) => setParticipant(e.target.value)}><option value="">{t("choose")}</option><option value="doctor">{t("doctor")}</option><option value="student">{t("student")}</option></select></label><label className="field full-field">{t("uploadDocument")}<span className="upload-hint">{participant === "student" ? t("student") : t("doctor")} · {t("uploadHint")}</span><span className="upload-control"><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={handleFile} required /><span className="upload-button"><FileCheck2 size={16} />{t("selectFile")}</span><span className="upload-name">{file?.name || t("documentRequired")}</span></span></label></div>{fileError && <p className="field-error" role="alert">{fileError}</p>}<label className="consent-row"><input type="checkbox" required /><span>{t("registrationConsent")}</span></label><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitRegistration")}<ArrowLeft size={17} /></button></form>}</div></section></>;
+  return <><PageIntro eyebrow={t("pageRegister")} title={t("registerTitle")} text={t("registerText")} /><section className="section-wrap form-layout registration-layout"><div className="form-aside register-aside"><div className="aside-icon"><FileCheck2 size={25} /></div><h2>{langText("A few details. A meaningful step.", "بيانات بسيطة، وخطوة لها معنى.")}</h2><p>{t("approvalNote")}</p><div className="registration-steps"><div><span>01</span>{t("fullName")}</div><div><span>02</span>{t("participantType")}</div><div><span>03</span>{t("uploadDocument")}</div></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 03</span><h2>{langText("Your information", "بياناتك الشخصية")}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><FormField label={t("email")} name="email" type="email" required /><label className="field">{t("participantType")}<select name="participantType" required value={participant} onChange={(e) => setParticipant(e.target.value)}><option value="">{t("choose")}</option><option value="doctor">{t("doctor")}</option><option value="student">{t("student")}</option></select></label><label className="field full-field">{t("uploadDocument")}<span className="upload-hint">{participant === "student" ? t("student") : t("doctor")} · {t("uploadHint")}</span><span className="upload-control"><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={handleFile} required /><span className="upload-button"><FileCheck2 size={16} />{t("selectFile")}</span><span className="upload-name">{file?.name || t("documentRequired")}</span></span></label></div>{fileError && <p className="field-error" role="alert">{fileError}</p>}<label className="consent-row"><input type="checkbox" required /><span>{t("registrationConsent")}</span></label><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitRegistration")}<ArrowLeft size={17} /></button></form>}</div></section></>;
 }
 
 function ContactPage({ t }) {

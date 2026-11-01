@@ -1,0 +1,752 @@
+.site-shell.is-ltr {
+  font-family: "DM Sans", "IBM Plex Sans Arabic", sans-serif;
+  line-height: 1.65;
+  direction: ltr;
+}
+
+.site-shell.is-ltr .hero h1,
+.site-shell.is-ltr .page-intro h1,
+.site-shell.is-ltr .section-intro h2,
+.site-shell.is-ltr .section-heading h2,
+.site-shell.is-ltr .about-preview-copy h2,
+.site-shell.is-ltr .lecture-card h3,
+.site-shell.is-ltr .closing-cta h2,
+.site-shell.is-ltr .form-aside h2,
+.site-shell.is-ltr .form-card-heading h2,
+.site-shell.is-ltr .modal-body h2,
+.site-shell.is-ltr .story-copy h2,
+.site-shell.is-ltr .guideline-book h2,
+.site-shell.is-ltr .hospital-feature-copy h2,
+.site-shell.is-ltr .privacy-item h2,
+.site-shell.is-ltr .video-copy h2 {
+  font-family: var(--serif);
+}
+
+.site-shell.is-ltr .hero-content {
+  width: min(86vw, 1120px);
+  max-width: 1120px;
+}
+
+.site-shell.is-ltr .hero-content > .eyebrow {
+  max-width: 100%;
+  line-height: 1.6;
+  letter-spacing: .12em;
+}
+
+.site-shell.is-ltr .hero h1 {
+  max-width: 900px;
+  font-size: clamp(48px, 5.4vw, 82px);
+  letter-spacing: -.035em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.site-shell.is-ltr .hero-content > p {
+  max-width: min(58ch, 100%);
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.75;
+}
+
+.site-shell.is-ltr .hero-footnote {
+  max-width: 100%;
+  line-height: 1.6;
+}
+.site-shell.is-ltr .book-art {
+  left: 30px;
+}
+.site-shell.is-ltr .more-menu {
+  transform-origin: top right;
+}
+
+.site-shell.is-ltr .modal-body h3,
+.site-shell.is-ltr .admin-page-heading h1,
+.site-shell.is-ltr .admin-panel-heading h2 {
+  font-family: "DM Sans", sans-serif;
+}
+
+.site-shell.is-ltr .lucide-arrow-up-left,
+.site-shell.is-ltr .lucide-arrow-left {
+  transform: scaleX(-1);
+}
+
+@media (max-width: 850px) {
+  .site-shell.is-ltr .hero-content {
+    width: min(100%, 740px);
+    max-width: 740px;
+  }
+
+  .site-shell.is-ltr .hero-image {
+    inset: 0 0 0 18%;
+  }
+
+  .site-shell.is-ltr .hero h1 {
+    font-size: clamp(46px, 7vw, 66px);
+  }
+
+  .site-shell.is-ltr .hero-content > p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-shell.is-ltr .hero-content {
+    width: 100%;
+    max-width: none;
+  }
+
+  .site-shell.is-ltr .hero h1 {
+    font-size: clamp(40px, 10.5vw, 58px);
+    letter-spacing: -.03em;
+    line-height: 1.08;
+  }
+
+  .site-shell.is-ltr .hero-content > p {
+    max-width: 48ch;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .site-shell.is-ltr .hero-actions {
+    width: min(100%, 340px);
+    gap: 9px;
+  }
+
+  .site-shell.is-ltr .hero-actions .button {
+    min-height: 46px;
+    font-size: 11px;
+    gap: 9px;
+  }
+
+  .site-shell.is-ltr .hero-footnote {
+    max-width: 34ch;
+    font-size: 10px;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 850px) {
+  .site-shell.is-ltr .hero-actions {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .site-shell.is-ltr .hero-actions .button {
+    width: auto;
+  }
+}
+
+@media (max-width: 479px) {
+  .site-shell.is-ltr .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .site-shell.is-ltr .hero-actions .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .site-shell.is-ltr .hero h1 {
+    font-size: clamp(34px, 10.5vw, 38px);
+  }
+}
+
+.site-shell.is-ltr .section-wrap {
+  width: min(100%, 1440px);
+  padding-inline: clamp(24px, 6.95vw, 100px);
+}
+
+.site-shell.is-ltr .hero,
+.site-shell.is-ltr .about-preview,
+.site-shell.is-ltr .about-story,
+.site-shell.is-ltr .hospital-feature,
+.site-shell.is-ltr .contact-section,
+.site-shell.is-ltr .footer-main {
+  direction: ltr;
+}
+
+.site-shell.is-ltr .hero-side-caption {
+  inset-inline-end: auto;
+  right: 97%;
+}
+html[data-theme="dark"] .site-shell.is-ltr .hero-image { background-image: linear-gradient(90deg, #050a12 0%, #050a12e8 23%, #050a1240 72%, #050a121f 100%), url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1900&q=90"); }
+
+.site-shell.is-ltr .hero-image {
+  inset: 0 0 0 34%;
+  background-position: 0 0, 50% 43%;
+}
+
+.site-shell.is-ltr .hero-scroll {
+  inset-inline-start: 5.2%;
+  inset-inline-end: auto;
+}
+
+.site-shell.is-ltr .hero-number {
+  inset-inline-start: auto;
+  inset-inline-end: 5.2%;
+}
+
+.site-shell.is-ltr .about-preview,
+.site-shell.is-ltr .gallery-preview-grid {
+  direction: ltr;
+}
+
+.site-shell.is-ltr .about-preview {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "image copy";
+}
+
+.site-shell.is-ltr .about-image {
+  grid-area: image;
+}
+
+.site-shell.is-ltr .about-preview-copy {
+  grid-area: copy;
+}
+
+.site-shell.is-ltr .gallery-preview-grid {
+  grid-auto-flow: dense;
+}
+
+.site-shell.is-ltr .lecture-filter {
+  direction: ltr;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  box-shadow: 0 8px 22px rgba(11, 22, 38, .06);
+}
+
+.site-shell.is-ltr .lecture-filter label {
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.site-shell.is-ltr .lecture-filter > select,
+.site-shell.is-ltr .lecture-filter label select,
+.site-shell.is-ltr .certificate-form select,
+.site-shell.is-ltr .form-grid .field select {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0 38px 0 14px;
+  background-color: var(--card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m3 4.5 3 3 3-3' stroke='%231b3fd1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 14px center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+html[data-theme="dark"] .site-shell.is-ltr .lecture-filter select,
+html[data-theme="dark"] .site-shell.is-ltr .certificate-form select,
+html[data-theme="dark"] .site-shell.is-ltr .form-grid .field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m3 4.5 3 3 3-3' stroke='%238aa4ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.site-shell.is-ltr .lecture-filter select:hover,
+.site-shell.is-ltr .certificate-form select:hover,
+.site-shell.is-ltr .form-grid .field select:hover {
+  border-color: var(--pri);
+}
+
+.site-shell.is-ltr .lecture-filter select:focus-visible,
+.site-shell.is-ltr .certificate-form select:focus-visible,
+.site-shell.is-ltr .form-grid .field select:focus-visible {
+  border-color: var(--pri);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pri) 16%, transparent);
+  outline: 0;
+}
+
+.site-shell.is-ltr .lecture-filter label select {
+  min-width: 195px;
+}
+
+
+
+.site-shell.is-ltr .about-preview,
+.site-shell.is-ltr .gallery-preview {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.site-shell.is-ltr .about-image,
+.site-shell.is-ltr .gallery-preview-grid,
+.site-shell.is-ltr .gallery-tile {
+  min-width: 0;
+}
+
+.site-shell.is-ltr .page-intro {
+  min-height: 290px;
+  padding: clamp(52px, 7vw, 88px) max(7vw, calc((100vw - 1200px) / 2));
+}
+
+.site-shell.is-ltr .page-intro-inner {
+  width: min(100%, 800px);
+}
+
+.site-shell.is-ltr .page-intro h1 {
+  max-width: 24ch;
+  font-size: clamp(40px, 5vw, 66px);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+
+.site-shell.is-ltr .page-intro p,
+.site-shell.is-ltr .section-intro p,
+.site-shell.is-ltr .section-heading p,
+.site-shell.is-ltr .about-preview-copy > p,
+.site-shell.is-ltr .story-copy p,
+.site-shell.is-ltr .lecture-card-copy > p,
+.site-shell.is-ltr .guideline-book p,
+.site-shell.is-ltr .guideline-side-item p,
+.site-shell.is-ltr .hospital-feature-copy p,
+.site-shell.is-ltr .form-aside > p,
+.site-shell.is-ltr .contact-card p,
+.site-shell.is-ltr .privacy-item p {
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.site-shell.is-ltr .page-intro p {
+  max-width: 62ch;
+}
+
+.site-shell.is-ltr .intro-decoration {
+  display: none;
+}
+
+.site-shell.is-ltr .gallery-card-overlay {
+  left: auto;
+  right: auto;
+  inset-inline: 18px;
+  direction: ltr;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.site-shell.is-ltr .managed-status {
+  padding: 6px 27px 6px 22px;
+  background-position: right 9px center, left 9px center;
+}
+
+.site-shell.is-ltr .section-intro h2,
+.site-shell.is-ltr .section-heading h2 {
+  font-size: clamp(32px, 3.2vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+
+.site-shell.is-ltr .about-preview-copy h2,
+.site-shell.is-ltr .story-copy h2,
+.site-shell.is-ltr .closing-cta h2,
+.site-shell.is-ltr .hospital-feature-copy h2,
+.site-shell.is-ltr .contact-card h2,
+.site-shell.is-ltr .contact-card h3,
+.site-shell.is-ltr .guideline-book h2 {
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.site-shell.is-ltr .about-preview-copy,
+.site-shell.is-ltr .hospital-feature-copy {
+  min-width: 0;
+}
+
+.site-shell.is-ltr .goal-item {
+  min-width: 0;
+}
+
+.site-shell.is-ltr .goal-item p,
+.site-shell.is-ltr .values-row strong,
+.site-shell.is-ltr .service-card > strong {
+  font-size: 18px;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.site-shell.is-ltr .lecture-card h3,
+.site-shell.is-ltr .video-copy h2,
+.site-shell.is-ltr .guideline-side-item strong {
+  font-size: 21px;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.site-shell.is-ltr .lecture-specialty,
+.site-shell.is-ltr .lecture-speaker,
+.site-shell.is-ltr .lecture-card-link,
+.site-shell.is-ltr .video-copy > span,
+.site-shell.is-ltr .video-copy small,
+.site-shell.is-ltr .filter-chip,
+.site-shell.is-ltr .lecture-filter span,
+.site-shell.is-ltr .lecture-filter select,
+.site-shell.is-ltr .demo-caption,
+.site-shell.is-ltr .story-image-tag,
+.site-shell.is-ltr .hospital-image-caption {
+  font-size: 12px;
+}
+
+.site-shell.is-ltr .lecture-filter {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.site-shell.is-ltr .contact-card {
+  min-width: 0;
+}
+
+.site-shell.is-ltr .contact-card h2 {
+  font-size: 30px;
+}
+
+.site-shell.is-ltr .contact-card h3 {
+  font-size: 22px;
+}
+
+.site-shell.is-ltr .contact-card h2,
+.site-shell.is-ltr .contact-card h3 {
+  overflow-wrap: anywhere;
+}
+
+.site-shell.is-ltr .contact-primary h2 {
+  font-size: clamp(21px, 6vw, 28px);
+}
+
+.site-shell.is-ltr .certificate-form label,
+.site-shell.is-ltr .field,
+.site-shell.is-ltr .consent-row,
+.site-shell.is-ltr .registration-steps > div,
+.site-shell.is-ltr .phone-hint,
+.site-shell.is-ltr .upload-hint {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.site-shell.is-ltr .certificate-form input,
+.site-shell.is-ltr .certificate-form select,
+.site-shell.is-ltr .field input,
+.site-shell.is-ltr .field textarea,
+.site-shell.is-ltr .field select {
+  font-size: 14px;
+}
+
+.site-shell.is-ltr .button,
+.site-shell.is-ltr .text-link,
+.site-shell.is-ltr .header-register {
+  font-size: 12px;
+}
+
+.site-shell.is-ltr .footer-brand > p,
+.site-shell.is-ltr .footer-links button,
+.site-shell.is-ltr .footer-next > p,
+.site-shell.is-ltr .footer-bottom {
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.site-shell.is-ltr .admin-page-heading h1 {
+  font-family: "DM Sans", sans-serif;
+  font-size: clamp(25px, 2.2vw, 32px);
+  line-height: 1.2;
+  letter-spacing: -.03em;
+}
+
+.site-shell.is-ltr .admin-panel-heading h2 {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.site-shell.is-ltr .admin-shell :is(
+  .admin-side-label,
+  .admin-side-link,
+  .admin-sidebar-bottom,
+  .admin-exit-link,
+  .admin-breadcrumb,
+  .admin-backend-state,
+  .admin-user-chip > strong,
+  .admin-security-warning p,
+  .admin-kicker,
+  .admin-page-heading p,
+  .admin-heading-actions > span,
+  .admin-metric-card > div small,
+  .admin-panel-heading p,
+  .admin-subtle-button,
+  .pipeline-value,
+  .pipeline-label,
+  .pipeline-summary > span,
+  .quick-links button,
+  .admin-table th,
+  .admin-table td,
+  .admin-status,
+  .admin-error,
+  .admin-notice,
+  .admin-search input,
+  .records-toolbar > select,
+  .record-count,
+  .table-actions > button,
+  .drawer-field,
+  .admin-form-field,
+  .user-create-form > label,
+  .admin-primary-button,
+  .admin-cancel-button,
+  .admin-toggle-button
+) {
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.site-shell.is-ltr .admin-table td > strong,
+.site-shell.is-ltr .admin-content-list strong,
+.site-shell.is-ltr .managed-item > div strong {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.site-shell.is-ltr .admin-table td > small,
+.site-shell.is-ltr .managed-item > div small,
+.site-shell.is-ltr .content-draft-note,
+.site-shell.is-ltr .editor-demo-note {
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1100px) {
+  .site-shell.is-ltr .section-wrap {
+    padding-inline: clamp(28px, 6vw, 66px);
+  }
+}
+
+@media (max-width: 900px) {
+  .site-shell.is-ltr .goals-grid,
+  .site-shell.is-ltr .values-row,
+  .site-shell.is-ltr .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-shell.is-ltr .about-story,
+  .site-shell.is-ltr .guidelines-content,
+  .site-shell.is-ltr .form-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+  }
+
+  .site-shell.is-ltr .story-image {
+    height: clamp(280px, 48vw, 430px);
+  }
+
+  .site-shell.is-ltr .guidelines-content,
+  .site-shell.is-ltr .form-layout {
+    max-width: 760px;
+  }
+
+  .site-shell.is-ltr .form-aside {
+    padding-bottom: 0;
+  }
+
+  .site-shell.is-ltr .admin-shell {
+    grid-template-columns: 215px minmax(0, 1fr);
+  }
+
+}
+
+@media (max-width: 760px) {
+  .site-shell.is-ltr .section-wrap {
+    padding-inline: 28px;
+  }
+
+  .site-shell.is-ltr .impact-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  .site-shell.is-ltr .hospital-feature {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-shell.is-ltr .hospital-feature-image {
+    min-height: 300px;
+    max-height: 420px;
+  }
+
+  .site-shell.is-ltr .hospital-feature-copy {
+    padding: 38px 28px 44px;
+  }
+
+  .site-shell.is-ltr .gallery-grid,
+  .site-shell.is-ltr .video-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-shell.is-ltr .gallery-grid {
+    grid-auto-rows: clamp(180px, 34vw, 250px);
+  }
+
+  .site-shell.is-ltr .admin-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .site-shell.is-ltr .section-wrap {
+    padding-inline: 22px;
+  }
+
+  .site-shell.is-ltr .about-preview {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-shell.is-ltr .about-scribble {
+    inset-inline-end: 0;
+  }
+
+  .site-shell.is-ltr .hero-image {
+    inset: 0;
+    background-position: 0 0, 42% center;
+    animation: none;
+    transform: none;
+  }
+
+  .site-shell.is-ltr .page-intro {
+    min-height: 240px;
+    padding: 48px 26px;
+  }
+
+  .site-shell.is-ltr .page-intro h1 {
+    font-size: clamp(36px, 9vw, 48px);
+  }
+
+  .site-shell.is-ltr .page-intro p,
+  .site-shell.is-ltr .section-intro p,
+  .site-shell.is-ltr .section-heading p,
+  .site-shell.is-ltr .about-preview-copy > p,
+  .site-shell.is-ltr .story-copy p,
+  .site-shell.is-ltr .lecture-card-copy > p,
+  .site-shell.is-ltr .guideline-book p,
+  .site-shell.is-ltr .guideline-side-item p,
+  .site-shell.is-ltr .hospital-feature-copy p,
+  .site-shell.is-ltr .form-aside > p,
+  .site-shell.is-ltr .contact-card p,
+  .site-shell.is-ltr .privacy-item p {
+    font-size: 13px;
+  }
+
+  .site-shell.is-ltr .about-preview-copy {
+    padding: 40px 26px 48px;
+  }
+
+  .site-shell.is-ltr .goals-grid,
+  .site-shell.is-ltr .values-row,
+  .site-shell.is-ltr .services-grid,
+  .site-shell.is-ltr .gallery-grid,
+  .site-shell.is-ltr .video-grid,
+  .site-shell.is-ltr .contact-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-shell.is-ltr .goal-item {
+    min-height: 135px;
+  }
+
+  .site-shell.is-ltr .values-row {
+    gap: 18px;
+  }
+
+  .site-shell.is-ltr .values-row > div {
+    border-inline-start: 0;
+    border-top: 1px solid var(--line);
+    padding: 14px 0 0;
+  }
+
+  .site-shell.is-ltr .gallery-grid {
+    grid-auto-rows: 230px;
+  }
+
+  .site-shell.is-ltr .gallery-card-overlay {
+    inset-inline: 10px;
+  }
+
+  .site-shell.is-ltr .gallery-card-1 {
+    grid-row: auto;
+  }
+
+  .site-shell.is-ltr .contact-card {
+    min-height: 0;
+  }
+
+  .site-shell.is-ltr .lecture-filter,
+  .site-shell.is-ltr .lecture-filter label {
+    width: 100%;
+  }
+
+  .site-shell.is-ltr .lecture-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-shell.is-ltr .lecture-filter label {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .site-shell.is-ltr .lecture-filter label select,
+  .site-shell.is-ltr .lecture-filter > select {
+    min-width: 0;
+    width: 100%;
+    flex: 1;
+  }
+
+  .site-shell.is-ltr .certificate-form,
+  .site-shell.is-ltr .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-shell.is-ltr .certificate-panel,
+  .site-shell.is-ltr .form-card {
+    padding: 24px 20px;
+  }
+
+  .site-shell.is-ltr .full-field {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .site-shell.is-ltr .admin-shell :is(
+    .admin-side-link,
+    .admin-page-heading p,
+    .admin-heading-actions > span,
+    .admin-metric-card > div small,
+    .admin-panel-heading p,
+    .pipeline-label,
+    .quick-links button,
+    .admin-table th,
+    .admin-table td,
+    .admin-status,
+    .records-toolbar > select,
+    .table-actions > button,
+    .admin-primary-button,
+    .admin-cancel-button
+  ) {
+    font-size: 9px;
+  }
+}

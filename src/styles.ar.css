@@ -1,0 +1,192 @@
+.site-shell.is-rtl {
+  font-family: "IBM Plex Sans Arabic", "DM Sans", sans-serif;
+}
+
+.site-shell.is-rtl .modal-body h3,
+.site-shell.is-rtl .admin-page-heading h1,
+.site-shell.is-rtl .admin-panel-heading h2 {
+  font-family: "IBM Plex Sans Arabic", "DM Sans", sans-serif;
+}
+.site-shell.is-rtl .book-art {
+  right: 40px;
+}
+
+.site-shell.is-rtl .more-menu {
+  transform-origin: top left;
+}
+
+.site-shell.is-rtl .more-menu-links button:hover > svg {
+  transform: translate(2px, -2px);
+}
+
+.site-shell.is-rtl .about-preview,
+.site-shell.is-rtl .gallery-preview-grid {
+  direction: rtl;
+}
+
+.site-shell.is-rtl .about-preview {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "image copy";
+}
+
+.site-shell.is-rtl .about-image {
+  grid-area: image;
+}
+
+.site-shell.is-rtl .about-preview-copy {
+  grid-area: copy;
+}
+
+.site-shell.is-rtl .gallery-preview-grid {
+  grid-auto-flow: dense;
+}
+
+.site-shell.is-rtl .lecture-filter {
+  direction: rtl;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  box-shadow: 0 8px 22px rgba(11, 22, 38, .06);
+}
+
+.site-shell.is-rtl .lecture-filter label {
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.site-shell.is-rtl .lecture-filter > select,
+.site-shell.is-rtl .lecture-filter label select,
+.site-shell.is-rtl .certificate-form select,
+.site-shell.is-rtl .form-grid .field select {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0 14px 0 38px;
+  background-color: var(--card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m3 4.5 3 3 3-3' stroke='%231b3fd1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: left 14px center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+html[data-theme="dark"] .site-shell.is-rtl .lecture-filter select,
+html[data-theme="dark"] .site-shell.is-rtl .certificate-form select,
+html[data-theme="dark"] .site-shell.is-rtl .form-grid .field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m3 4.5 3 3 3-3' stroke='%238aa4ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.site-shell.is-rtl .lecture-filter select:hover,
+.site-shell.is-rtl .certificate-form select:hover,
+.site-shell.is-rtl .form-grid .field select:hover {
+  border-color: var(--pri);
+}
+
+.site-shell.is-rtl .lecture-filter select:focus-visible,
+.site-shell.is-rtl .certificate-form select:focus-visible,
+.site-shell.is-rtl .form-grid .field select:focus-visible {
+  border-color: var(--pri);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pri) 16%, transparent);
+  outline: 0;
+}
+
+.site-shell.is-rtl .lecture-filter label select {
+  min-width: 195px;
+}
+
+.site-shell.is-rtl .lecture-filter > select {
+  min-width: 220px;
+}
+
+.site-shell.is-rtl .about-preview,
+.site-shell.is-rtl .gallery-preview {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.site-shell.is-rtl .about-image,
+.site-shell.is-rtl .gallery-preview-grid,
+.site-shell.is-rtl .gallery-tile {
+  min-width: 0;
+}
+
+.site-shell.is-rtl .managed-status {
+  padding: 6px 22px 6px 27px;
+  background-position: left 9px center, right 9px center;
+}
+html[data-theme="dark"] .site-shell.is-rtl .hero-image {
+    position: absolute;
+    inset: 0 34% 0 0;
+    z-index: -2;
+
+    background-image: linear-gradient(270deg,
+     #050a12 0%, #050a12e8 23%, #050a1240 72%, #050a121f 100%),
+      url(https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1900&q=90);
+}
+html[data-theme="light"] .site-shell.is-rtl .hero-image {
+    position: absolute;
+    inset: 0 34% 0 0;
+    z-index: -2;
+
+    background-image:linear-gradient(270deg, #1b3fd1 0%, #1b3fd1d9 23%, #1b3fd133 72%, #0b16261f 100%), url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1900&q=90");
+}
+@media (max-width: 620px) {
+  .site-shell.is-rtl .hero-image {
+    animation: none;
+    transform: none;
+    inset: 0 !important;
+  }
+
+  .site-shell.is-rtl .about-preview {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .site-shell.is-rtl .about-scribble {
+    inset-inline-end: 0;
+  }
+
+  .site-shell.is-rtl .lecture-filter,
+  .site-shell.is-rtl .lecture-filter label {
+    width: 100%;
+  }
+
+  .site-shell.is-rtl .lecture-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-shell.is-rtl .lecture-filter label {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .site-shell.is-rtl .lecture-filter label select,
+  .site-shell.is-rtl .lecture-filter > select {
+    min-width: 0;
+    width: 100%;
+    flex: 1;
+  }
+}
+
+@media (max-width: 360px) {
+  .site-shell.is-rtl .hero h1 {
+    font-size: 40px;
+  }
+}
