@@ -368,7 +368,7 @@ a { color: inherit; text-decoration: none; }
 .phone-input-wrap { position: relative; display: block; }
 .phone-input-wrap > svg { position: absolute; inset-inline-start: 13px; top: 50%; transform: translateY(-50%); color: var(--mute); pointer-events: none; }
 .phone-input-wrap input { padding-inline-start: 39px; }
-.phone-hint { display: block; margin-top: 5px; color: var(--mute); font-size: 10px; line-height: 1.5; }
+.phone-hint { display: none; margin-top: 5px; color: var(--mute); font-size: 10px; line-height: 1.5; }
 .field textarea { height: auto; min-height: 122px; resize: vertical; padding: 12px; line-height: 1.7; }
 .field select { appearance: auto; }
 .full-field { grid-column: 1 / -1; }
