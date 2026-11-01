@@ -19,8 +19,7 @@
   transform: translate(2px, -2px);
 }
 
-.site-shell.is-rtl .about-preview,
-.site-shell.is-rtl .gallery-preview-grid {
+.site-shell.is-rtl .about-preview {
   direction: rtl;
 }
 
@@ -35,10 +34,6 @@
 
 .site-shell.is-rtl .about-preview-copy {
   grid-area: copy;
-}
-
-.site-shell.is-rtl .gallery-preview-grid {
-  grid-auto-flow: dense;
 }
 
 .site-shell.is-rtl .lecture-filter {
@@ -114,15 +109,12 @@ html[data-theme="dark"] .site-shell.is-rtl .form-grid .field select {
   min-width: 220px;
 }
 
-.site-shell.is-rtl .about-preview,
-.site-shell.is-rtl .gallery-preview {
+.site-shell.is-rtl .about-preview {
   max-width: 100%;
   overflow: hidden;
 }
 
-.site-shell.is-rtl .about-image,
-.site-shell.is-rtl .gallery-preview-grid,
-.site-shell.is-rtl .gallery-tile {
+.site-shell.is-rtl .about-image {
   min-width: 0;
 }
 
@@ -135,16 +127,17 @@ html[data-theme="dark"] .site-shell.is-rtl .hero-image {
     inset: 0 34% 0 0;
     z-index: -2;
 
-    background-image: linear-gradient(270deg,
+    background-image: linear-gradient(90deg,
      #050a12 0%, #050a12e8 23%, #050a1240 72%, #050a121f 100%),
-      url(https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1900&q=90);
+      url("./assets/lecture-1.webp");
+      transform: scaleX(-1);
 }
 html[data-theme="light"] .site-shell.is-rtl .hero-image {
     position: absolute;
     inset: 0 34% 0 0;
     z-index: -2;
 
-    background-image:linear-gradient(270deg, #1b3fd1 0%, #1b3fd1d9 23%, #1b3fd133 72%, #0b16261f 100%), url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1900&q=90");
+    background-image:linear-gradient(270deg, #183547 0%, #183547d9 23%, #18354733 72%, #0b16261f 100%), url("./assets/lecture-1.webp");
 }
 @media (max-width: 620px) {
   .site-shell.is-rtl .hero-image {

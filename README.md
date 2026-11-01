@@ -17,7 +17,7 @@ npm run dev
 
 The `main` branch is deployed to GitHub Pages at <https://youssef75r7r75r57.github.io/ganna-conference-platform/>. Each push to `main` builds and publishes the frontend automatically. The public production build hides the unauthenticated admin preview; forms and demo data remain frontend-only and are not saved to a backend.
 
-Create a local `.env` from `.env.example` and set `VITE_GUIDELINES_PLATFORM_URL` when the previous guidelines platform URL is confirmed. Leave it empty to show the setup notice instead of opening a placeholder destination.
+The medical-guidelines links open <https://ehc-obgyn-gl.vercel.app/> in a new tab.
 
 ## Frontend/backend boundary
 
@@ -25,11 +25,13 @@ Public page components call the interface exported from `src/api.js`. Its curren
 
 To connect a backend, replace the `demoApi` implementation in `src/api.js` with requests to authenticated backend endpoints while preserving the exported methods:
 
-- `searchCertificates({ name, type })`
+- `searchCertificates({ name, type, phone })`
 - `submitRegistration(formData)`
 - `submitQuestion(formData)`
 - `getAdminOverview()`
 - `updateRecord(collection, id, updates)`
+
+Certificate search results can include `imageUrl` and `downloadUrl`; the frontend validates these as same-origin or HTTPS URLs and displays the certificate image inline, with a download link to the sample PDF. The demo certificate images and PDFs are shipped publicly.
 
 The backend must own authentication, roles and permissions, validation, durable storage, document handling, and secure Microsoft Graph/OneDrive operations. The browser must never receive OneDrive credentials or unrestricted certificate URLs. `submitRegistration` receives the selected `File` as `formData.document` as well as `formData.documentName`; send it as multipart data to a protected backend endpoint. The current demo adapter only holds that object in memory and does not upload it.
 
@@ -37,4 +39,10 @@ The admin preview includes the conference, certificates, gallery, videos, lectur
 
 ## Demo content
 
-Conference statistics, lecture summaries, contacts, and image/video selections are illustrative UI content. Confirm and replace them with approved conference materials before launch. The project does not include backend services, real certificates, video hosting, authentication, or an admin authorization boundary.
+The conference date, venue, edition, and programme themes come from `GANNA ATTAGLANCE.pdf`. Lecture descriptions, video entries, and certificate records are explicitly illustrative frontend samples. The five supplied root-level photos are used in lecture cards; every photo in `data/` is included in the gallery. The conference and hospital logo pairs are optimized into `src/assets/` and displayed together across the public site.
+
+The home page's Explore section highlights conference videos, medical guidelines, Ganna Hospital services, and questions for the conference team. Lecture and gallery previews are grouped in the About page, alongside the conference story and goals. Contact is a primary navigation link and has its own page.
+
+The certificate search form uses the English name printed on the sample certificate; a leading `Doctor` or `Dr.` is optional. CME searches also require the registered phone number. The attendance and CME PDFs, images, names, and phone number included in the demo data are illustrative samples for this public preview, not real certificates or participant records. This is only a frontend interaction: all data shipped to the browser is readable, so name-and-phone matching is not access control. Never include real certificate files or participant details in a public frontend. Real certificate lookup and downloads must be implemented by an authenticated backend that verifies access and returns files securely.
+
+The project does not include backend services, real certificate files, video hosting, authentication, or an admin authorization boundary.

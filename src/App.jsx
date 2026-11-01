@@ -1,82 +1,98 @@
 import React, { useEffect, useState } from "react";
 import {
-  Activity, ArrowDown, ArrowLeft, ArrowUpLeft, Award, Baby, BookOpen,
+  Activity, AtSign, ArrowDown, ArrowLeft, ArrowUpLeft, Award, Baby, BookOpen, Building2,
   CalendarDays, Check, ChevronDown, CircleHelp, ClipboardList, ExternalLink,
   FileCheck2, HeartPulse, Hospital, Image as ImageIcon, Languages, Link2, Mail,
   MapPin, Menu, Phone, Play, Plus, Search, Settings, Shield, ShieldCheck, Sparkles,
   Stethoscope, UserCog, Users, Video, X,
 } from "lucide-react";
 import { api } from "./api.js";
-import { conferences, gallery, labels, lectures, stats, videos } from "./data.js";
+import { brandLogos, conferences, gallery, GUIDELINES_PLATFORM_URL, labels, lectures, stats, videos } from "./data.js";
 import { EGYPTIAN_MOBILE_PATTERN, normalizeEgyptianMobile } from "./phone.js";
 
 const copy = {
   ar: {
-    tagline: "مؤتمر جنى الطبي", homeEyebrow: "معًا نصنع فرقًا في صحة الطفل",
-    heroTitle: "المعرفة التي\nتصنع فرقًا.", heroText: "مساحة تجمع الخبرة الإنسانية بالعلم الحديث، وتفتح حوارًا جديدًا حول مستقبل الرعاية الصحية للأطفال.",
-    explore: "اكتشف المؤتمر", registerNow: "سجّل اهتمامك", scroll: "اكتشف المزيد",
-    nextConference: "المؤتمر القادم", nextTheme: "رعاية أفضل تبدأ بفكرة.", nextDate: "قريبًا · القاهرة، مصر",
-    statsTitle: "أثرٌ يكبر كل عام", statsText: "رحلة علمية يشارك في صنعها أطباء وخبراء ومهتمون بصحة الطفل.",
-    aboutEyebrow: "عن المؤتمر", aboutTitle: "لأن كل طفل يستحق بداية أفضل.", aboutText: "مؤتمر جنى مساحة علمية وإنسانية تجمع المتخصصين لمشاركة المعرفة، واستكشاف أحدث الممارسات، وبناء مجتمع يؤمن بأن رعاية الطفل تبدأ بالاستماع إليه.",
+    tagline: "المؤتمر العلمي لجنى", homeEyebrow: "معًا من أجل صحة المرأة",
+    heroTitle: "معرفة تُحدث فرقًا\nفي صحة المرأة.", heroText: "مساحة تجمع خبرات التوليد وأمراض النساء والخصوبة وعلم الأجنة، وتفتح حوارًا علميًا من أجل رعاية أفضل.",
+    explore: "اكتشف المؤتمر", registerNow: "سجل الأن", scroll: "اكتشف المزيد",
+    nextConference: "المؤتمر العلمي الخامس عشر", nextTheme: "معًا من أجل صحة المرأة.", nextDate: "٢٣ أكتوبر ٢٠٢٦ · القاهرة",
+    statsTitle: "برنامج علمي في أربعة مسارات", statsText: "التوليد وأمراض النساء وعلم الأجنة وورش التوليد المتقدمة، بحسب برنامج المؤتمر.",
+    aboutEyebrow: "عن المؤتمر", aboutTitle: "معرفة أقرب إلى رعاية أفضل.", aboutText: "يجمع المؤتمر العلمي الخامس عشر لجنى المتخصصين في التوليد وأمراض النساء والخصوبة وعلم الأجنة لمشاركة المعرفة واستكشاف أحدث الإرشادات والممارسات.",
     learnMore: "تعرف على المؤتمر", highlight: "من قلب المؤتمر", galleryTitle: "لحظات تبقى معنا", viewGallery: "شاهد معرض الصور",
     scienceEyebrow: "المعرفة في متناولك", lecturesTitle: "أفكار تستحق أن تُروى.", lecturesText: "ملخصات علمية لأبرز الجلسات والمتحدثين، لتبقى المعرفة قريبة منك.", browseLectures: "استكشف المحاضرات",
     guideEyebrow: "مرجعك العلمي", guideTitle: "دليل موثوق، بخطوة واحدة.", guideText: "اكتشف المراجع الطبية والإرشادات المعتمدة عبر منصة الجايدلاينز.", guideButton: "اكتشف الجايدلاينز",
-    ctaTitle: "مكانك بيننا.", ctaText: "انضم إلى مجتمع مهني يؤمن أن تبادل المعرفة هو أول طريق التغيير.", ctaButton: "ابدأ التسجيل",
-    footerText: "مجتمع علمي يصنع فرقًا في رعاية الأطفال.", quickLinks: "روابط سريعة", contactUs: "تواصل معنا", followUs: "تابع رحلتنا", rights: "جميع الحقوق محفوظة لمؤتمر جنى",
-    aboutPageEyebrow: "حكايتنا", aboutPageTitle: "نؤمن أن الرعاية الأفضل تبدأ بالمعرفة.", aboutPageLead: "مؤتمر جنى الطبي مساحة تجمع العلم والإنسانية، وتقرّب الخبرة من كل من يسعى لمستقبل صحي أفضل للأطفال.",
-    vision: "رؤيتنا", visionText: "مجتمع صحي يملك المعرفة والأدوات لصناعة مستقبل أفضل لكل طفل.", mission: "رسالتنا", missionText: "تمكين مقدمي الرعاية بالعلم والحوار والتعاون متعدد التخصصات.",
-    goals: "ما نسعى إليه", goal1: "تعزيز الممارسات المبنية على الدليل العلمي.", goal2: "خلق مساحة حوار بين الخبراء ومقدمي الرعاية.", goal3: "دعم التعلم المستمر وتحسين جودة الخدمات.", goal4: "الاحتفاء بكل خطوة نحو صحة أفضل للطفل.",
-    principles: "قيم تجمعنا", principle1: "العلم أولًا", principle2: "الطفل في القلب", principle3: "نعمل معًا", principle4: "أثر يدوم",
-    pageCertificates: "شهاداتك هنا", certTitle: "ابحث عن شهادتك.", certText: "اكتب الاسم المسجل في المؤتمر للبحث عن الشهادة. شهادات العرض هنا تجريبية وليست ملفات قابلة للتنزيل.",
-    certType: "نوع الشهادة", allTypes: "كل الشهادات", regular: "شهادة حضور", cma: "شهادة Certified CMA", registeredName: "الاسم المسجل", namePlaceholder: "مثال: سارة أحمد", certSearch: "ابحث عن شهادة", searching: "جارٍ البحث...", noCert: "لم نعثر على شهادة مطابقة. تأكد من كتابة الاسم كما سُجّل.", certFound: "شهادات مطابقة", preview: "معاينة", download: "تنزيل PDF", demoUnavailable: "التنزيل والمعاينة الفعلية يحتاجان ربطًا آمنًا بـ OneDrive عبر الـbackend.",
-    pageGallery: "ألبومات المؤتمر", galleryPageTitle: "حكايات في صور.", allAlbums: "الكل", albumEvents: "الفعاليات", albumSessions: "الجلسات العلمية", albumCommunity: "المجتمع", photoNote: "صور تجريبية — تُدار الألبومات من لوحة التحكم بعد ربط الخدمة.",
+    ctaTitle: "مكانك بيننا.", ctaText: "انضم إلى مجتمع مهني يطوّر الحوار والمعرفة في صحة المرأة.", ctaButton: "ابدأ التسجيل",
+    footerText: "مجتمع علمي يدعم مستقبلًا أفضل لصحة المرأة.", quickLinks: "روابط سريعة", contactUs: "تواصل معنا", followUs: "تابع رحلتنا", rights: "جميع الحقوق محفوظة لمؤتمر جنى",
+    aboutPageEyebrow: "حكايتنا", aboutPageTitle: "الرعاية الأفضل تبدأ بالمعرفة.", aboutPageLead: "مساحة تجمع الخبرات في التوليد وأمراض النساء والخصوبة وعلم الأجنة، وتقرّب المعرفة من كل من يعمل من أجل صحة المرأة.",
+    vision: "رؤيتنا", visionText: "مجتمع صحي يملك المعرفة والأدوات لدعم صحة المرأة في كل مراحل حياتها.", mission: "رسالتنا", missionText: "تمكين مقدمي الرعاية بالعلم والحوار والتعاون متعدد التخصصات.",
+    goals: "ما نسعى إليه", goal1: "تعزيز الممارسات المبنية على الدليل العلمي.", goal2: "خلق مساحة حوار بين الخبراء ومقدمي الرعاية.", goal3: "دعم التعلم المستمر وتحسين جودة الخدمات.", goal4: "الارتقاء برعاية المرأة وصحة الأم والجنين.",
+    principles: "قيم تجمعنا", principle1: "العلم أولًا", principle2: "صحة المرأة", principle3: "نعمل معًا", principle4: "أثر يدوم",
+    homeExploreEyebrow: "اكتشف مساحات جنى", homeExploreTitle: "مصادر واضحة، وخطوات أقرب إليك.", homeExploreText: "افتح الإرشادات الطبية، تعرّف على رعاية مستشفى جنى، شاهد محتوى المؤتمر، أو اسأل فريقه.",
+    aboutResourcesTitle: "المعرفة والتجربة في مكان واحد.", aboutResourcesText: "استكشف محاضرات المؤتمر ولقطاته؛ محتوى علمي وتجارب مصوّرة تستحق أن تبقى قريبة منك.",
+    showcaseGalleryText: "شاهد صورًا مختارة من مجتمع جنى وفعالياته العلمية.", showcaseGalleryAction: "تصفّح كل الصور",
+    showcaseVideoText: "لمحة مرئية من أرشيف المؤتمر والجلسات.", showcaseVideoAction: "شاهد المعاينة",
+    showcaseGuidelinesText: "مرجع طبي رقمي يسهّل الوصول إلى الإرشادات والمصادر المتخصصة.", showcaseGuidelinesAction: "افتح منصة الإرشادات", showcaseGuidelineTopics: ["التوليد", "أمراض النساء", "الخصوبة"],
+    showcaseHospitalText: "تعرّف على خدمات صحة المرأة ورعاية الأم والجنين.", showcaseHospitalAction: "اكتشف المستشفى", showcaseHospitalTopics: ["صحة المرأة", "رعاية الأم والجنين"],
+    showcaseAskText: "وجّه سؤالك إلى فريق المؤتمر ليُراجع ويوجّه للمختص.", showcaseAskAction: "أرسل سؤالك",
+    showcaseContactText: "نحن هنا للاستفسارات العامة والتعاون.", showcaseContactAction: "تواصل مع الفريق",
+    organizerLabel: "تنظيم وإدارة المؤتمرات", organizerName: "Innovators for Organizing Conferences", organizerHandleLabel: "حساب التواصل", organizerHandle: "innovators_conferences",
+    contactPhoneLabel: "اتصل بنا", contactEmailLabel: "راسلنا",
+    pageCertificates: "شهاداتك هنا", certTitle: "ابحث عن شهادتك.", certText: "ابحث بالاسم الإنجليزي كما هو مكتوب في الشهادة. يمكنك كتابة الاسم مع أو بدون Doctor أو Dr. النتائج تجريبية.",
+    certType: "نوع الشهادة", allTypes: "كل الشهادات", regular: "شهادة حضور", cme: "شهادة CME", registeredName: "الاسم بالإنجليزية كما في الشهادة", namePlaceholder: "Dr. Mona Mohammed Abdelgader Mohammed", registeredPhone: "رقم الهاتف المسجل لشهادة CME", phonePlaceholder: "01203350245", phoneError: "أدخل رقمًا مصريًا صحيحًا من 11 رقمًا يبدأ بـ 010 أو 011 أو 012 أو 015.", certSearch: "ابحث عن شهادة", searching: "جارٍ البحث...", noCert: "لم نعثر على شهادة مطابقة. اكتب الاسم الإنجليزي كما هو مكتوب في الشهادة ورقم الهاتف الصحيح لشهادة CME.", certFound: "شهادات مطابقة", preview: "معاينة", download: "تنزيل PDF", openDocument: "فتح الشهادة في نافذة جديدة", secureCertificateNote: "تم التحقق من الشهادة. يمكنك معاينتها أو تنزيلها بأمان.", certificateLinkUnavailable: "تعذر الوصول إلى ملف الشهادة بأمان. حاول مرة أخرى أو تواصل مع فريق المؤتمر.", demoUnavailable: "هذه ملفات وبيانات تجريبية للعرض فقط وليست شهادات حقيقية. البحث عن شهادة حقيقية وتنزيلها يتطلب Backend آمنًا.",
+    pageGallery: "ألبومات المؤتمر", galleryPageTitle: "حكايات في صور.", allAlbums: "الكل", albumEvents: "الفعاليات", albumSessions: "الجلسات العلمية", albumCommunity: "المجتمع", photoNote: "تضم هذه المجموعة كل الصور المضافة إلى مجلد data، ويمكن إدارة الألبومات لاحقًا من لوحة المحتوى.",
     pageVideos: "من أرشيفنا", videosTitle: "شاهد، وتذكّر، وتعلّم.", watch: "شاهد الفيديو", videoDemo: "الفيديوهات المعروضة نماذج تصميمية؛ تضاف روابط البث من لوحة المحتوى.",
-    pageLectures: "مكتبة المعرفة", lecturePageTitle: "العلم يستمر بعد الجلسة.", filterBy: "تصفية حسب", filterSpecialty: "التخصص", filterSpeaker: "المتحدث", filterSession: "الجلسة العلمية", allSpecialties: "كل التخصصات", allSpeakers: "كل المتحدثين", allSessions: "كل الجلسات", viewDetails: "تفاصيل المحاضرة", speaker: "المتحدث", specialty: "التخصص", session: "الجلسة العلمية", lectureOverview: "نبذة عن المحاضرة", keyTopics: "محاور أساسية", keyTakeaway: "الفكرة الأهم", takeawayText: "المعرفة العلمية تكتمل حين تتحول إلى رعاية أفضل وأكثر إنسانية لكل طفل.", noLectures: "لا توجد محاضرات ضمن هذا الاختيار.",
-    pageGuidelines: "دليلك الطبي", guidePageTitle: "المعرفة الموثوقة، أقرب إليك.", guidePageText: "استكشف المراجع والإرشادات الطبية المعتمدة من خلال منصة الجايدلاينز المرتبطة بالمؤتمر.", openSearch: "افتح البحث في الجايدلاينز", accessPlatform: "زيارة المنصة السابقة", externalPending: "سيُضاف رابط المنصة السابقة بعد تأكيده من إدارة المؤتمر. يمكن توصيله من ملف إعدادات الواجهة.",
-    pageHospital: "مكان الرعاية تبدأ", hospitalTitle: "مستشفى جنى للأطفال.", hospitalText: "رعاية متخصصة، واهتمام إنساني، ومساحة آمنة لكل طفل وعائلته. تعرّف على المستشفى وخدماته وتخصصاته.", hospitalServices: "خدمات وتخصصات", service1: "طب الأطفال العام", service2: "رعاية حديثي الولادة", service3: "النمو والتطور", service4: "الرعاية المتكاملة للأسرة", hospitalVision: "رؤيتنا في الرعاية", hospitalVisionText: "أن تكون كل زيارة بداية مطمئنة، وأن يجد كل طفل رعاية تحترم احتياجاته وتدعم أسرته.",
-    pageAsk: "نسمعك باهتمام", askTitle: "اسأل الخبراء.", askText: "أرسل سؤالك إلى إدارة المؤتمر. تتم مراجعته وتوجيهه للمختص عند الحاجة. لا يُعد هذا النموذج خدمة طوارئ أو استشارة طبية مباشرة.", fullName: "الاسم بالكامل", email: "البريد الإلكتروني", phone: "رقم الهاتف", yourQuestion: "سؤالك", questionPlaceholder: "اكتب سؤالك هنا...", submitQuestion: "إرسال السؤال", submitting: "جارٍ الإرسال...", privateNote: "سؤالك وبياناتك خاصة، ولا تظهر للزوار.", sentQuestion: "تم إرسال سؤالك بنجاح", questionId: "رقم السؤال", questionDisclaimer: "إرسال السؤال لا يضمن الرد الطبي أو الاستشاري.", consentPrivacy: "أوافق على سياسة الخصوصية ومعالجة بياناتي لغرض الرد على طلبي.",
-    pageRegister: "خطوتك الأولى", registerTitle: "سجّل للمؤتمر القادم.", registerText: "املأ بياناتك لتقديم طلب التسجيل. ستقوم إدارة المؤتمر بمراجعته يدويًا.", participantType: "صفة المشارك", choose: "اختر", doctor: "طبيب / طبيبة", student: "طالب / طالبة طب", uploadDocument: "إثبات الصفة", uploadHint: "PDF أو JPG أو PNG — الحد الأقصى 10MB", documentRequired: "يرجى إرفاق كارنيه النقابة أو إثبات قيد الجامعة.", registrationConsent: "أوافق على سياسة الخصوصية ومعالجة بياناتي لغرض مراجعة التسجيل.", submitRegistration: "إرسال طلب التسجيل", sentRegistration: "تم استلام طلب التسجيل", registrationId: "رقم التسجيل", approvalNote: "سيظهر الطلب لدى إدارة المؤتمر للمراجعة والموافقة اليدوية.", selectFile: "اختر ملفًا",
-    pageContact: "نحن هنا", contactTitle: "يسعدنا أن نسمع منك.", contactText: "للاستفسارات العامة والتعاون، تواصل مع فريق مؤتمر جنى.", emailUs: "راسلنا", location: "الموقع", locationValue: "القاهرة، جمهورية مصر العربية", conferenceOffice: "مكتب المؤتمر", officeText: "فريق جنى الطبي · الأحد إلى الخميس", sendEmail: "إرسال بريد إلكتروني", contactNote: "للاستفسارات العلمية، يُرجى استخدام نموذج اسأل الخبراء.",
-    pagePrivacy: "خصوصيتك أولوية", privacyTitle: "خصوصيتك جزء من ثقتنا.", privacyLead: "نلتزم بالحفاظ على بياناتك والتعامل معها فقط للأغراض التي جُمعت من أجلها، وفق السياسة المعتمدة من إدارة المؤتمر.",
-    privacy1Title: "البيانات التي نجمعها", privacy1Text: "بيانات التواصل والتسجيل والأسئلة التي تقدمها طوعًا عبر نماذج الموقع، إضافة إلى المستندات المطلوبة للتحقق من صفة المشارك عند التسجيل.", privacy2Title: "كيف نستخدم البيانات", privacy2Text: "لمراجعة طلبات التسجيل، والرد على الأسئلة، وإدارة المشاركة في المؤتمر. لا تظهر الأسئلة أو البيانات الشخصية على الموقع العام.", privacy3Title: "الحماية والوصول", privacy3Text: "تقتصر صلاحية الاطلاع على مسؤولي المؤتمر المخولين. يتطلب حفظ البيانات الفعلي وتطبيق ضوابط الوصول ربطًا آمنًا بالـbackend.", privacy4Title: "الشهادات", privacy4Text: "تُحفظ الشهادات على OneDrive ولا ينبغي إتاحة المجلدات للعامة. البحث والمعاينة والتنزيل الفعلية تتطلب تكاملًا آمنًا عبر الـbackend.", privacy5Title: "الاحتفاظ بالبيانات", privacy5Text: "تحدد إدارة المؤتمر مدة الاحتفاظ المناسبة وآلية الحذف عند انتهاء الغرض من البيانات.", privacyDemo: "ملاحظة: هذه نسخة واجهة تجريبية؛ لا ترسل بيانات حقيقية. لن تُحفظ النماذج أو الملفات خارج ذاكرة الصفحة الحالية.",
+    pageLectures: "مكتبة المعرفة", lecturePageTitle: "العلم يستمر بعد الجلسة.", filterBy: "تصفية حسب", filterSpecialty: "التخصص", filterSpeaker: "المتحدث", filterSession: "الجلسة العلمية", allSpecialties: "كل التخصصات", allSpeakers: "كل المتحدثين", allSessions: "كل الجلسات", viewDetails: "تفاصيل المحاضرة", speaker: "المتحدث", specialty: "التخصص", session: "الجلسة العلمية", lectureOverview: "نبذة عن المحاضرة", keyTopics: "محاور أساسية", keyTakeaway: "الفكرة الأهم", takeawayText: "الموضوعات المعروضة نماذج تصميمية مستوحاة من برنامج المؤتمر، وليست إرشادات أو استشارات طبية.", noLectures: "لا توجد محاضرات ضمن هذا الاختيار.",
+    pageGuidelines: "دليلك الطبي", guidePageTitle: "المعرفة الموثوقة، أقرب إليك.", guidePageText: "استكشف المراجع والإرشادات الطبية المعتمدة عبر منصة الجايدلاينز.", openSearch: "افتح منصة الجايدلاينز", accessPlatform: "زيارة المنصة", externalPending: "ستُفتح منصة الإرشادات الطبية في نافذة جديدة.",
+    pageHospital: "مكان الرعاية تبدأ", hospitalTitle: "مستشفى جنى لصحة المرأة.", hospitalText: "مساحة تجريبية للتعريف بخدمات صحة المرأة والتوليد والخصوبة، مع رعاية تراعي احتياجات المرأة والأسرة.", hospitalServices: "خدمات وتخصصات", service1: "أمراض النساء", service2: "رعاية الحمل والولادة", service3: "الخصوبة وعلم الأجنة", service4: "صحة الأم والجنين", hospitalVision: "رؤيتنا في الرعاية", hospitalVisionText: "رعاية ترافق المرأة باحترام واهتمام في مختلف مراحل حياتها.",
+    pageAsk: "نسمعك باهتمام", askTitle: "اسأل الخبراء.", askText: "أرسل سؤالك إلى إدارة المؤتمر. تتم مراجعته وتوجيهه للمختص عند الحاجة. لا يُعد هذا النموذج خدمة طوارئ أو استشارة طبية مباشرة.", fullName: "الاسم بالكامل", email: "البريد الإلكتروني", phone: "رقم الهاتف", yourQuestion: "سؤالك", questionPlaceholder: "اكتب سؤالك هنا...", submitQuestion: "إرسال السؤال", submitting: "جارٍ الإرسال...", privateNote: "هذه واجهة تجريبية؛ لا ترسل معلومات شخصية أو طبية حقيقية.", sentQuestion: "تم إرسال سؤالك بنجاح", questionId: "رقم السؤال", questionDisclaimer: "إرسال السؤال لا يضمن الرد الطبي أو الاستشاري.", dataUseConsent: "أوافق على استخدام بياناتي لغرض مراجعة طلبي والرد عليه.",
+    pageRegister: "خطوتك الأولى", registerTitle: "سجّل للمؤتمر القادم.", registerText: "املأ بياناتك لتقديم طلب التسجيل. ستقوم إدارة المؤتمر بمراجعته يدويًا.", participantType: "صفة المشارك", choose: "اختر", doctor: "طبيب / طبيبة", student: "طالب / طالبة طب", uploadDocument: "إثبات الصفة", uploadHint: "PDF أو JPG أو PNG — الحد الأقصى 10MB", documentRequired: "يرجى إرفاق إثبات الصفة.", registrationConsent: "أوافق على استخدام بياناتي لغرض مراجعة طلب التسجيل.", submitRegistration: "إرسال طلب التسجيل", sentRegistration: "تم استلام طلب التسجيل", registrationId: "رقم التسجيل", approvalNote: "سيظهر الطلب لدى إدارة المؤتمر للمراجعة والموافقة اليدوية.", selectFile: "اختر ملفًا",
+    pageContact: "نحن هنا", contactTitle: "يسعدنا أن نسمع منك.", contactText: "للاستفسارات العامة والتعاون، تواصل مع فريق مؤتمر جنى.", emailUs: "راسلنا", location: "الموقع", locationValue: "فندق سميراميس إنتركونتيننتال، القاهرة", conferenceOffice: "مكتب المؤتمر", officeText: "فريق جنى الطبي · الأحد إلى الخميس", sendEmail: "إرسال بريد إلكتروني", contactNote: "للاستفسارات العلمية، يُرجى استخدام نموذج اسأل الخبراء.",
     admin: "لوحة الإدارة", adminDemo: "وضع تجريبي", adminTitle: "إدارة المؤتمر", adminText: "واجهة استعراضية فقط. تسجيل الدخول والصلاحيات وتخزين البيانات تحتاج Backend قبل الاستخدام الفعلي.", overview: "نظرة عامة", registrations: "طلبات التسجيل", questions: "أسئلة الخبراء", content: "المحتوى العلمي", pending: "قيد المراجعة", approved: "مقبول", answered: "تمت الإجابة", underReview: "تحت المراجعة", assigned: "محال إلى خبير", closed: "مغلق", reject: "مرفوض", incomplete: "غير مكتمل", noRecords: "لا توجد طلبات بعد في هذه الجلسة.", status: "الحالة", submittedAt: "تاريخ الإرسال", management: "الإدارة", requestsCount: "طلبات التسجيل", questionsCount: "الأسئلة الواردة", lecturesCount: "المحاضرات", securityDemo: "لوحة الإدارة هنا غير محمية — لا تستخدمها مع بيانات حقيقية قبل تنفيذ المصادقة والصلاحيات في الـbackend.",
     toastError: "حدث خطأ. حاول مرة أخرى.", sentToast: "تم الإرسال بنجاح", chooseFile: "يرجى اختيار ملف إثبات الصفة.", fileTooLarge: "حجم الملف يجب ألا يتجاوز 10MB.", invalidFile: "الملفات المقبولة PDF أو JPG أو PNG.", messageSent: "سيفتح تطبيق البريد لإكمال رسالتك.", openPreview: "المعاينة التجريبية", close: "إغلاق", english: "English", arabic: "العربية", menu: "القائمة",
   },
   en: {
-    tagline: "Ganna Medical Conference", homeEyebrow: "Together, making a difference in child health",
-    heroTitle: "Knowledge that\nmakes a difference.", heroText: "Where human experience meets modern science—and a new conversation about the future of children's healthcare begins.",
+    tagline: "Ganna Scientific Conference", homeEyebrow: "Together for women's health",
+    heroTitle: "Knowledge that moves\nwomen's health forward.", heroText: "Bringing together expertise in obstetrics, gynecology, fertility, and embryology to share ideas and shape better care.",
     explore: "Explore the conference", registerNow: "Register your interest", scroll: "Discover more",
-    nextConference: "UP NEXT", nextTheme: "Better care starts with an idea.", nextDate: "Coming soon · Cairo, Egypt",
-    statsTitle: "An impact that grows every year", statsText: "A learning journey shaped by doctors, experts, and child-health advocates.",
-    aboutEyebrow: "ABOUT THE CONFERENCE", aboutTitle: "Because every child deserves a better start.", aboutText: "Ganna is a scientific and human-centered space where specialists share knowledge, explore new practices, and build a community that believes better child care starts by listening.",
+    nextConference: "GANNA'S 15TH SCIENTIFIC CONFERENCE", nextTheme: "Together for women's health.", nextDate: "23 October 2026 · Cairo",
+    statsTitle: "A scientific programme across four halls", statsText: "Obstetrics, gynecology, embryology, and an advanced obstetrics workshop, as listed in the conference programme.",
+    aboutEyebrow: "ABOUT THE CONFERENCE", aboutTitle: "Knowledge that brings better care closer.", aboutText: "Ganna's 15th Scientific Conference brings together specialists in obstetrics, gynecology, fertility, and embryology to share knowledge and explore current guidance and practice.",
     learnMore: "Get to know Ganna", highlight: "INSIDE THE CONFERENCE", galleryTitle: "Moments worth keeping", viewGallery: "Explore the gallery",
     scienceEyebrow: "KNOWLEDGE, WITH YOU", lecturesTitle: "Ideas worth sharing.", lecturesText: "Scientific summaries of key sessions and speakers, keeping knowledge close.", browseLectures: "Explore lectures",
     guideEyebrow: "YOUR SCIENTIFIC RESOURCE", guideTitle: "Trusted guidance, one click away.", guideText: "Explore trusted medical references and guidelines through our guidelines platform.", guideButton: "Explore guidelines",
-    ctaTitle: "There's a place for you here.", ctaText: "Join a community that believes sharing knowledge is where change begins.", ctaButton: "Start registration",
-    footerText: "A scientific community making a difference in child care.", quickLinks: "Quick links", contactUs: "Contact us", followUs: "Follow our journey", rights: "Ganna Conference. All rights reserved.",
-    aboutPageEyebrow: "OUR STORY", aboutPageTitle: "We believe better care starts with knowledge.", aboutPageLead: "Ganna Medical Conference brings science and humanity together, connecting expertise with everyone working toward a healthier future for children.",
-    vision: "Our vision", visionText: "A health community equipped with the knowledge and tools to build a better future for every child.", mission: "Our mission", missionText: "Empowering care providers through science, dialogue, and multidisciplinary collaboration.",
-    goals: "What we work toward", goal1: "Advance evidence-based clinical practice.", goal2: "Create dialogue between experts and care providers.", goal3: "Support continuous learning and quality improvement.", goal4: "Celebrate every step toward better child health.",
-    principles: "Values that bring us together", principle1: "Science first", principle2: "Child at heart", principle3: "Better together", principle4: "Lasting impact",
-    pageCertificates: "YOUR CERTIFICATES", certTitle: "Find your certificate.", certText: "Enter the name registered for the conference. Results below are demo records, not downloadable certificates.",
-    certType: "Certificate type", allTypes: "All certificates", regular: "Attendance certificate", cma: "Certified CMA certificate", registeredName: "Registered name", namePlaceholder: "e.g. Sarah Ahmed", certSearch: "Search certificates", searching: "Searching...", noCert: "No matching certificate found. Check the name you registered with.", certFound: "Matching certificates", preview: "Preview", download: "Download PDF", demoUnavailable: "Live preview and downloads require secure OneDrive integration through the backend.",
-    pageGallery: "CONFERENCE ALBUMS", galleryPageTitle: "Stories in photographs.", allAlbums: "All", albumEvents: "Highlights", albumSessions: "Scientific sessions", albumCommunity: "Community", photoNote: "Demo photos — albums will be managed from the admin dashboard when connected.",
+    ctaTitle: "There's a place for you here.", ctaText: "Join a professional community advancing dialogue and knowledge in women's health.", ctaButton: "Start registration",
+    footerText: "A scientific community supporting the future of women's health.", quickLinks: "Quick links", contactUs: "Contact us", followUs: "Follow our journey", rights: "Ganna Conference. All rights reserved.",
+    aboutPageEyebrow: "OUR STORY", aboutPageTitle: "Better care begins with knowledge.", aboutPageLead: "A space connecting expertise in obstetrics, gynecology, fertility, and embryology with everyone working for women's health.",
+    vision: "Our vision", visionText: "A health community equipped to support women's health at every stage of life.", mission: "Our mission", missionText: "Empowering care providers through science, dialogue, and multidisciplinary collaboration.",
+    goals: "What we work toward", goal1: "Advance evidence-based clinical practice.", goal2: "Create dialogue between experts and care providers.", goal3: "Support continuous learning and quality improvement.", goal4: "Advance care for women, mothers, and babies.",
+    principles: "Values that bring us together", principle1: "Science first", principle2: "Women's health", principle3: "Better together", principle4: "Lasting impact",
+    homeExploreEyebrow: "EXPLORE GANNA", homeExploreTitle: "Clear resources. A closer next step.", homeExploreText: "Open medical guidance, discover Ganna Hospital care, revisit conference content, or ask the team.",
+    aboutResourcesTitle: "Knowledge and experiences, together.", aboutResourcesText: "Explore conference lectures and highlights: scientific content and shared moments worth revisiting.",
+    showcaseGalleryText: "A curated look at the Ganna community and its scientific events.", showcaseGalleryAction: "Explore all photos",
+    showcaseVideoText: "A visual preview from the conference and its sessions.", showcaseVideoAction: "Play the preview",
+    showcaseGuidelinesText: "A digital medical library that brings specialist guidance and resources within reach.", showcaseGuidelinesAction: "Open the guidelines platform", showcaseGuidelineTopics: ["Obstetrics", "Gynecology", "Fertility"],
+    showcaseHospitalText: "Discover women's health and maternal-fetal care services.", showcaseHospitalAction: "Discover the hospital", showcaseHospitalTopics: ["Women's health", "Maternal-fetal care"],
+    showcaseAskText: "Send your question to the conference team for review and routing.", showcaseAskAction: "Ask a question",
+    showcaseContactText: "We're here for general enquiries and collaboration.", showcaseContactAction: "Contact the team",
+    organizerLabel: "Conference organizer", organizerName: "Innovators for Organizing Conferences", organizerHandleLabel: "Social account", organizerHandle: "innovators_conferences",
+    contactPhoneLabel: "Call us", contactEmailLabel: "Email us",
+    pageCertificates: "YOUR CERTIFICATES", certTitle: "Find your certificate.", certText: "Search using the English name as printed on the certificate. You can include or omit Doctor or Dr. Results are demo records only.",
+    certType: "Certificate type", allTypes: "All certificates", regular: "Attendance certificate", cme: "CME certificate", registeredName: "Name in English as printed", namePlaceholder: "Dr. Mona Mohammed Abdelgader Mohammed", registeredPhone: "Phone number for CME certificate", phonePlaceholder: "01203350245", phoneError: "Enter a valid 11-digit Egyptian mobile number starting with 010, 011, 012, or 015.", certSearch: "Search certificates", searching: "Searching...", noCert: "No matching certificate found. Enter the English name as printed on the certificate and the correct phone for CME.", certFound: "Matching certificates", preview: "Preview", download: "Download PDF", openDocument: "Open certificate in a new tab", secureCertificateNote: "Your certificate is verified and ready to preview or download securely.", certificateLinkUnavailable: "The certificate file is not available securely. Try again or contact the conference team.", demoUnavailable: "These files and records are for demonstration only; they are not real certificates. Searching for and downloading real certificates requires a secure backend.",
+    pageGallery: "CONFERENCE ALBUMS", galleryPageTitle: "Stories in photographs.", allAlbums: "All", albumEvents: "Highlights", albumSessions: "Scientific sessions", albumCommunity: "Community", photoNote: "This gallery includes every photo supplied in the data folder. Albums can be managed through the content dashboard later.",
     pageVideos: "FROM OUR ARCHIVE", videosTitle: "Watch, remember, learn.", watch: "Watch video", videoDemo: "These videos are design samples; streaming links will be added through the content dashboard.",
-    pageLectures: "KNOWLEDGE LIBRARY", lecturePageTitle: "The learning continues after the session.", filterBy: "Filter by", filterSpecialty: "Specialty", filterSpeaker: "Speaker", filterSession: "Scientific session", allSpecialties: "All specialties", allSpeakers: "All speakers", allSessions: "All sessions", viewDetails: "View details", speaker: "Speaker", specialty: "Specialty", session: "Scientific session", lectureOverview: "About this lecture", keyTopics: "Key topics", keyTakeaway: "Key takeaway", takeawayText: "Scientific knowledge matters most when it leads to more compassionate, better care for every child.", noLectures: "No lectures match this selection.",
-    pageGuidelines: "YOUR MEDICAL RESOURCE", guidePageTitle: "Trusted knowledge, within reach.", guidePageText: "Explore trusted medical references and evidence-based guidance through the platform connected with the conference.", openSearch: "Open guidelines search", accessPlatform: "Visit previous platform", externalPending: "The previous platform URL will be added after confirmation by the conference team. It can be connected through the frontend configuration.",
-    pageHospital: "WHERE CARE BEGINS", hospitalTitle: "Ganna Children's Hospital.", hospitalText: "Specialized care, human connection, and a safe space for every child and family. Get to know the hospital, its services, and specialties.", hospitalServices: "Services & specialties", service1: "General pediatrics", service2: "Neonatal care", service3: "Growth & development", service4: "Integrated family care", hospitalVision: "A caring vision", hospitalVisionText: "Every visit should bring reassurance, and every child should receive care that respects their needs and supports their family.",
-    pageAsk: "WE'RE LISTENING", askTitle: "Ask the experts.", askText: "Send your question to the conference team. It will be reviewed and routed to a specialist when appropriate. This is not an emergency service or direct medical consultation.", fullName: "Full name", email: "Email address", phone: "Phone number", yourQuestion: "Your question", questionPlaceholder: "Write your question here...", submitQuestion: "Submit question", submitting: "Submitting...", privateNote: "Your question and details are private and are never shown publicly.", sentQuestion: "Your question was received", questionId: "Question ID", questionDisclaimer: "Submitting a question does not guarantee a medical or advisory response.", consentPrivacy: "I agree to the privacy policy and the use of my information to respond to my request.",
-    pageRegister: "YOUR NEXT STEP", registerTitle: "Register for the next conference.", registerText: "Fill in your details to submit a registration request. The conference team will review it manually.", participantType: "Participant type", choose: "Choose", doctor: "Doctor", student: "Medical student", uploadDocument: "Proof of status", uploadHint: "PDF, JPG or PNG — max 10MB", documentRequired: "Please attach your syndicate card or proof of university enrollment.", registrationConsent: "I agree to the privacy policy and the use of my information to review my registration.", submitRegistration: "Submit registration", sentRegistration: "Registration request received", registrationId: "Registration ID", approvalNote: "Your request will be sent to the conference team for manual review and approval.", selectFile: "Choose a file",
-    pageContact: "LET'S CONNECT", contactTitle: "We'd love to hear from you.", contactText: "For general enquiries and collaboration, get in touch with the Ganna Conference team.", emailUs: "Email us", location: "Location", locationValue: "Cairo, Arab Republic of Egypt", conferenceOffice: "Conference office", officeText: "Ganna Medical Team · Sunday to Thursday", sendEmail: "Send an email", contactNote: "For scientific questions, please use the Ask the Experts form.",
-    pagePrivacy: "YOUR PRIVACY MATTERS", privacyTitle: "Your privacy is part of our trust.", privacyLead: "We are committed to protecting your information and using it only for the purposes for which it was collected, in line with the conference team's approved policy.",
-    privacy1Title: "Information we collect", privacy1Text: "Contact, registration, and question details you voluntarily provide, plus documents needed to verify participant type when registering.", privacy2Title: "How we use it", privacy2Text: "To review registration requests, respond to questions, and manage conference participation. Questions and personal details are never public.", privacy3Title: "Protection & access", privacy3Text: "Access should be restricted to authorized conference administrators. Secure backend integration is required to store data and enforce access controls.", privacy4Title: "Certificates", privacy4Text: "Certificates are stored in OneDrive and folders should never be public. Live search, previews, and downloads require secure backend integration.", privacy5Title: "Data retention", privacy5Text: "The conference team will define an appropriate retention period and deletion process when information is no longer needed.", privacyDemo: "Note: This is a frontend demo. Do not submit real personal data. Forms and files are not retained beyond the current page session.",
+    pageLectures: "KNOWLEDGE LIBRARY", lecturePageTitle: "The learning continues after the session.", filterBy: "Filter by", filterSpecialty: "Specialty", filterSpeaker: "Speaker", filterSession: "Scientific session", allSpecialties: "All specialties", allSpeakers: "All speakers", allSessions: "All sessions", viewDetails: "View details", speaker: "Speaker", specialty: "Specialty", session: "Scientific session", lectureOverview: "About this lecture", keyTopics: "Key topics", keyTakeaway: "Key takeaway", takeawayText: "Topics shown here are illustrative samples inspired by the conference programme, not medical guidance or advice.", noLectures: "No lectures match this selection.",
+    pageGuidelines: "YOUR MEDICAL RESOURCE", guidePageTitle: "Trusted knowledge, within reach.", guidePageText: "Explore trusted medical references and evidence-based guidance through the guidelines platform.", openSearch: "Open the guidelines platform", accessPlatform: "Visit the platform", externalPending: "The medical-guidelines platform opens in a new tab.",
+    pageHospital: "WHERE CARE BEGINS", hospitalTitle: "Ganna Women's Health Hospital.", hospitalText: "A sample introduction to women's health, obstetrics, and fertility services, centred on the needs of women and families.", hospitalServices: "Services & specialties", service1: "Gynecology", service2: "Pregnancy and birth care", service3: "Fertility and embryology", service4: "Maternal-fetal health", hospitalVision: "A caring vision", hospitalVisionText: "Care that supports women with respect and attention at every stage of life.",
+    pageAsk: "WE'RE LISTENING", askTitle: "Ask the experts.", askText: "Send your question to the conference team. It will be reviewed and routed to a specialist when appropriate. This is not an emergency service or direct medical consultation.", fullName: "Full name", email: "Email address", phone: "Phone number", yourQuestion: "Your question", questionPlaceholder: "Write your question here...", submitQuestion: "Submit question", submitting: "Submitting...", privateNote: "This is a demo interface; do not submit real personal or medical information.", sentQuestion: "Your question was received", questionId: "Question ID", questionDisclaimer: "Submitting a question does not guarantee a medical or advisory response.", dataUseConsent: "I agree to the use of my information to review and respond to my request.",
+    pageRegister: "YOUR NEXT STEP", registerTitle: "Register for the next conference.", registerText: "Fill in your details to submit a registration request. The conference team will review it manually.", participantType: "Participant type", choose: "Choose", doctor: "Doctor", student: "Medical student", uploadDocument: "Proof of status", uploadHint: "PDF, JPG or PNG — max 10MB", documentRequired: "Please attach proof of participant status.", registrationConsent: "I agree to the use of my information to review my registration request.", submitRegistration: "Submit registration", sentRegistration: "Registration request received", registrationId: "Registration ID", approvalNote: "Your request will be sent to the conference team for manual review and approval.", selectFile: "Choose a file",
+    pageContact: "LET'S CONNECT", contactTitle: "We'd love to hear from you.", contactText: "For general enquiries and collaboration, get in touch with the Ganna Conference team.", emailUs: "Email us", location: "Location", locationValue: "Semiramis InterContinental, Cairo", conferenceOffice: "Conference office", officeText: "Ganna Medical Team · Sunday to Thursday", sendEmail: "Send an email", contactNote: "For scientific questions, please use the Ask the Experts form.",
     admin: "Admin dashboard", adminDemo: "DEMO MODE", adminTitle: "Conference management", adminText: "Design preview only. Authentication, role permissions, and persistent storage must be implemented in the backend before launch.", overview: "Overview", registrations: "Registrations", questions: "Expert questions", content: "Scientific content", pending: "Pending", approved: "Approved", answered: "Answered", underReview: "Under review", assigned: "Assigned to speaker", closed: "Closed", reject: "Rejected", incomplete: "Incomplete", noRecords: "No requests in this session yet.", status: "Status", submittedAt: "Submitted", management: "MANAGEMENT", requestsCount: "Registration requests", questionsCount: "Incoming questions", lecturesCount: "Lectures", securityDemo: "This dashboard is not protected. Do not use it with real data until backend authentication and permissions are implemented.",
     toastError: "Something went wrong. Please try again.", sentToast: "Sent successfully", chooseFile: "Please attach proof of participant type.", fileTooLarge: "File size must be under 10MB.", invalidFile: "Accepted file types are PDF, JPG, and PNG.", messageSent: "Your email app will open to complete your message.", openPreview: "Demo preview", close: "Close", english: "English", arabic: "العربية", menu: "Menu",
   },
 };
 
-const mainNav = ["home", "about", "lectures", "certificates"];
-const moreNav = ["gallery", "videos", "guidelines", "hospital", "ask", "contact", "privacy"];
+const mainNav = ["home", "contact", "lectures", "certificates"];
+const moreNav = ["about", "gallery", "videos", "guidelines", "hospital", "ask"];
 const statusTransitions = {
   questions: { pending: ["under_review", "assigned", "closed"], under_review: ["assigned", "answered", "closed"], assigned: ["under_review", "answered", "closed"], answered: ["closed", "under_review"], closed: ["under_review"] },
   registrations: { pending: ["under_review", "approved", "rejected", "incomplete"], under_review: ["approved", "rejected", "incomplete", "pending"], approved: ["under_review"], rejected: ["under_review"], incomplete: ["under_review", "approved", "rejected"] },
@@ -88,7 +104,7 @@ const adminCopy = {
     totalRegistrations: "إجمالي التسجيلات", awaitingReview: "بانتظار المراجعة", openQuestions: "الأسئلة المفتوحة", publishedLectures: "المحاضرات المنشورة", recentActivity: "أحدث الطلبات", registrationPipeline: "حالة التسجيلات", latestQuestions: "آخر الأسئلة", viewAll: "عرض الكل", noRecords: "لا توجد بيانات في هذه الجلسة حتى الآن.", all: "الكل", pending: "قيد المراجعة", under_review: "تحت المراجعة", assigned: "محال إلى خبير", answered: "تمت الإجابة", closed: "مغلق", approved: "مقبول", rejected: "مرفوض", incomplete: "غير مكتمل", published: "منشور", draft: "مسودة", needs_setup: "يحتاج إعدادًا", active: "نشط", inactive: "موقوف",
     countRegistrations: "طلب تسجيل", countQuestions: "سؤال وارد", countLectures: "محاضرة", countAssets: "عنصر", record: "الاسم / المحتوى", type: "النوع", email: "البريد الإلكتروني", phone: "رقم الهاتف", date: "تاريخ الإرسال", status: "الحالة", actions: "الإجراء", searchRecords: "ابحث بالاسم أو البريد أو الرقم...", filterStatus: "تصفية الحالة", changeStatus: "تغيير الحالة", inspect: "التفاصيل", participant: "صفة المشارك", document: "المستند", viewDocument: "عرض اسم الملف", question: "السؤال", answer: "الإجابة", administrativeNotes: "ملاحظات إدارية", assignedSpeaker: "الخبير الموجّه إليه", saveDetails: "حفظ التفاصيل", detailsSaved: "تم حفظ التعديلات التجريبية", registrationDetails: "تفاصيل التسجيل", questionDetails: "إدارة السؤال", privateRecord: "هذه البيانات خاصة ولا تظهر للزوار.",
     managerSubtitle: "عدّل المحتوى التجريبي الذي ستُوصله لاحقًا بمصدر البيانات.", addItem: "إضافة عنصر", editItem: "تعديل العنصر", newItem: "عنصر جديد", save: "حفظ التغييرات", cancel: "إلغاء", deleteItem: "حذف", confirmDelete: "هل تريد حذف هذا العنصر التجريبي؟", saved: "تم الحفظ في الجلسة الحالية.", itemAdded: "تمت إضافة العنصر.", titleAr: "العنوان بالعربية", titleEn: "العنوان بالإنجليزية", title: "العنوان", year: "السنة", eventDate: "تاريخ المؤتمر", location: "المكان", category: "التصنيف", speaker: "المتحدث", specialty: "التخصص", summary: "الملخص", imageUrl: "رابط الصورة", videoUrl: "رابط الفيديو", platformUrl: "رابط المنصة", vision: "الرؤية", mission: "الرسالة", serviceList: "التخصصات والخدمات", required: "هذا الحقل مطلوب.", noItems: "لا توجد عناصر بعد.", managementNote: "تعديلات هذه النسخة مؤقتة في الذاكرة؛ اربط الـbackend لتخزينها ونشرها.",
-    onedriveTitle: "تكامل OneDrive", onedriveDesc: "مساحة الشهادات لا تُعرض للعامة. يجب تنفيذ البحث والتنزيل من خلال Microsoft Graph API في الـbackend.", connectionStatus: "حالة الربط", notConnected: "غير مربوط", secureBackend: "يلزم Backend آمن", certificateFolders: "مجلدات الشهادات", conferenceCertificates: "شهادات المؤتمر", cmaCertificates: "شهادات CMA", certificateSearch: "بحث تجريبي عن شهادة", testName: "اكتب اسمًا للبحث في بيانات العرض فقط", search: "بحث", certificateResults: "نتائج تجريبية", noCertificateResults: "لا توجد نتائج مطابقة.", neverPublic: "لا تضع رابط مجلد OneDrive عامًا ولا تحفظ بيانات الاعتماد في الواجهة.",
+    onedriveTitle: "تكامل OneDrive", onedriveDesc: "مساحة الشهادات لا تُعرض للعامة. يجب تنفيذ البحث والتنزيل من خلال Microsoft Graph API في الـbackend.", connectionStatus: "حالة الربط", notConnected: "غير مربوط", secureBackend: "يلزم Backend آمن", certificateFolders: "مجلدات الشهادات", conferenceCertificates: "شهادات المؤتمر", cmeCertificates: "شهادات CME", certificateSearch: "بحث تجريبي عن شهادة", testName: "اكتب اسمًا للبحث في بيانات العرض فقط", search: "بحث", certificateResults: "نتائج تجريبية", noCertificateResults: "لا توجد نتائج مطابقة.", neverPublic: "لا تضع رابط مجلد OneDrive عامًا ولا تحفظ بيانات الاعتماد في الواجهة.",
     usersSubtitle: "معاينة حسابات الإدارة والأدوار المتاحة.", addUser: "إضافة مستخدم", userName: "اسم المستخدم", role: "الدور الإداري", userAdded: "تمت إضافة المستخدم التجريبي.", disable: "إيقاف", enable: "تفعيل", super_admin: "مدير عام", content_manager: "مدير المحتوى", scientific_manager: "مدير علمي", registration_manager: "مدير التسجيل", questions_admin: "مسؤول الأسئلة", technical_admin: "مسؤول تقني", roleMatrix: "مصفوفة الأدوار والصلاحيات", permission: "الصلاحية", usersPlaceholder: "name@example.com", roleWarning: "هذه المصفوفة للعرض فقط. فرض الصلاحيات يجب أن يتم على الخادم وليس في الواجهة.",
     signOut: "تسجيل الخروج", backToSite: "العودة للموقع", notifications: "الإشعارات", moduleEmpty: "هذا القسم جاهز للربط، أضف بياناته عبر النموذج.", noSearchResults: "لا توجد نتائج مطابقة.", overview: "نظرة عامة", contentPublished: "عناصر منشورة", updatedRecently: "آخر تحديث اليوم", toReview: "للمراجعة",
   },
@@ -98,14 +114,14 @@ const adminCopy = {
     totalRegistrations: "Total registrations", awaitingReview: "Awaiting review", openQuestions: "Open questions", publishedLectures: "Published lectures", recentActivity: "Recent activity", registrationPipeline: "Registration pipeline", latestQuestions: "Latest questions", viewAll: "View all", noRecords: "No records in this session yet.", all: "All", pending: "Pending", under_review: "Under review", assigned: "Assigned to speaker", answered: "Answered", closed: "Closed", approved: "Approved", rejected: "Rejected", incomplete: "Incomplete", published: "Published", draft: "Draft", needs_setup: "Needs setup", active: "Active", inactive: "Inactive",
     countRegistrations: "registration requests", countQuestions: "incoming questions", countLectures: "lectures", countAssets: "items", record: "Name / content", type: "Type", email: "Email", phone: "Phone", date: "Submitted", status: "Status", actions: "Action", searchRecords: "Search name, email or ID...", filterStatus: "Filter status", changeStatus: "Change status", inspect: "Details", participant: "Participant type", document: "Document", viewDocument: "View filename", question: "Question", answer: "Answer", administrativeNotes: "Admin notes", assignedSpeaker: "Assigned expert", saveDetails: "Save details", detailsSaved: "Demo changes saved", registrationDetails: "Registration details", questionDetails: "Manage question", privateRecord: "This information is private and is never shown publicly.",
     managerSubtitle: "Edit demo content that can later be connected to your data source.", addItem: "Add item", editItem: "Edit item", newItem: "New item", save: "Save changes", cancel: "Cancel", deleteItem: "Delete", confirmDelete: "Delete this demo item?", saved: "Saved for this session.", itemAdded: "Item added.", titleAr: "Title in Arabic", titleEn: "Title in English", title: "Title", year: "Year", eventDate: "Conference date", location: "Location", category: "Category", speaker: "Speaker", specialty: "Specialty", summary: "Summary", imageUrl: "Image URL", videoUrl: "Video URL", platformUrl: "Platform URL", vision: "Vision", mission: "Mission", serviceList: "Specialties & services", required: "This field is required.", noItems: "No items yet.", managementNote: "Changes in this frontend demo are temporary and stored in memory; connect a backend to persist and publish them.",
-    onedriveTitle: "OneDrive integration", onedriveDesc: "Certificate storage must remain private. Search and downloads should run through Microsoft Graph API on the backend.", connectionStatus: "Connection status", notConnected: "Not connected", secureBackend: "Secure backend required", certificateFolders: "Certificate folders", conferenceCertificates: "Conference certificates", cmaCertificates: "CMA certificates", certificateSearch: "Demo certificate search", testName: "Search sample records by name", search: "Search", certificateResults: "Demo results", noCertificateResults: "No matching records.", neverPublic: "Never make a OneDrive folder public or store credentials in the frontend.",
+    onedriveTitle: "OneDrive integration", onedriveDesc: "Certificate storage must remain private. Search and downloads should run through Microsoft Graph API on the backend.", connectionStatus: "Connection status", notConnected: "Not connected", secureBackend: "Secure backend required", certificateFolders: "Certificate folders", conferenceCertificates: "Conference certificates", cmeCertificates: "CME certificates", certificateSearch: "Demo certificate search", testName: "Search sample records by name", search: "Search", certificateResults: "Demo results", noCertificateResults: "No matching records.", neverPublic: "Never make a OneDrive folder public or store credentials in the frontend.",
     usersSubtitle: "Preview administrator accounts and available roles.", addUser: "Add user", userName: "User name", role: "Role", userAdded: "Demo user added.", disable: "Disable", enable: "Enable", super_admin: "Super admin", content_manager: "Content manager", scientific_manager: "Scientific manager", registration_manager: "Registration manager", questions_admin: "Questions administrator", technical_admin: "Technical administrator", roleMatrix: "Role permissions matrix", permission: "Permission", usersPlaceholder: "name@example.com", roleWarning: "This matrix is for preview only. Permissions must be enforced server-side, never in the frontend.",
     signOut: "Sign out", backToSite: "Back to website", notifications: "Notifications", moduleEmpty: "This section is ready to connect. Add its details using the form.", noSearchResults: "No matching results.", overview: "Overview", contentPublished: "Published items", updatedRecently: "Updated today", toReview: "Needs review",
   },
 };
 
 function App() {
-  const [lang, setLang] = useState("ar");
+  const [lang, setLang] = useState("en");
   const [theme, setTheme] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   const [page, setPage] = useState("home");
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -134,6 +150,11 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  }, [lang]);
+
+  useEffect(() => {
     const preference = window.matchMedia("(prefers-color-scheme: dark)");
     const syncTheme = (event) => setTheme(event.matches ? "dark" : "light");
     setTheme(preference.matches ? "dark" : "light");
@@ -153,7 +174,7 @@ function App() {
         }
       });
     }, { threshold: 0.12, rootMargin: "0px 0px -30px 0px" });
-    const targets = document.querySelectorAll("main .stat-item, main .about-preview-copy, main .lecture-card, main .gallery-tile, main .guideline-banner, main .closing-cta, main .goal-item, main .values-row > div, main .video-card, main .gallery-card, main .service-card, main .contact-card, main .privacy-item, main .certificate-panel, main .form-card, main .admin-panel, main .admin-metric-card");
+    const targets = document.querySelectorAll("main .stat-item, main .about-preview-copy, main .lecture-card, main .showcase-card, main .showcase-lecture-item, main .showcase-gallery-shot, main .closing-cta, main .goal-item, main .values-row > div, main .video-card, main .gallery-card, main .service-card, main .contact-card, main .certificate-panel, main .form-card, main .admin-panel, main .admin-metric-card");
     targets.forEach((target) => {
       target.classList.add("reveal-on-scroll");
       observer.observe(target);
@@ -177,10 +198,7 @@ function App() {
   }
 
   function switchLanguage() {
-    const next = lang === "ar" ? "en" : "ar";
-    setLang(next);
-    document.documentElement.lang = next;
-    document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
+    setLang((current) => current === "ar" ? "en" : "ar");
   }
 
   const navLabel = (key) => labels[lang][key];
@@ -188,9 +206,8 @@ function App() {
   return (
     <div className={`site-shell ${isAr ? "is-rtl" : "is-ltr"}`}>
       <header className="site-header">
-        <button className="brand" onClick={() => navigate("home")} aria-label="Ganna home">
-          <span className="brand-mark"><span>ج</span><i /></span>
-          <span className="brand-copy"><strong>جَنَى</strong><small>{t("tagline")}</small></span>
+        <button className="brand brand-pair" onClick={() => navigate("home")} aria-label="Ganna Conference and Hospitals home">
+          <BrandLogoPair />
         </button>
         <nav className={`main-nav ${mobileMenu ? "nav-open" : ""}`} aria-label={t("menu")}>
           {mainNav.map((key) => (
@@ -224,18 +241,17 @@ function App() {
       </header>
 
       <main>
-        {page === "home" && <HomePage t={t} lang={lang} navigate={navigate} publicContent={publicContent} />}
-        {page === "about" && <AboutPage t={t} lang={lang} />}
+        {page === "home" && <HomePage t={t} lang={lang} navigate={navigate} openModal={setModal} publicContent={publicContent} />}
+        {page === "about" && <AboutPage t={t} lang={lang} navigate={navigate} openModal={setModal} publicContent={publicContent} />}
         {page === "certificates" && <CertificatesPage t={t} lang={lang} notify={notify} openModal={setModal} />}
         {page === "gallery" && <GalleryPage t={t} lang={lang} openModal={setModal} items={publicContent.gallery} />}
         {page === "videos" && <VideosPage t={t} lang={lang} openModal={setModal} items={publicContent.videos} />}
         {page === "lectures" && <LecturesPage t={t} lang={lang} openModal={setModal} items={publicContent.lectures} />}
-        {page === "guidelines" && <GuidelinesPage t={t} notify={notify} platformUrl={publicContent.guidelines?.[0]?.url} />}
+        {page === "guidelines" && <GuidelinesPage t={t} platformUrl={publicContent.guidelines?.[0]?.url} />}
         {page === "hospital" && <HospitalPage t={t} lang={lang} profile={publicContent.hospital?.[0]} />}
         {page === "ask" && <AskPage t={t} lang={lang} notify={notify} />}
         {page === "register" && <RegistrationPage t={t} lang={lang} notify={notify} />}
         {page === "contact" && <ContactPage t={t} />}
-        {page === "privacy" && <PrivacyPage t={t} />}
         {page === "admin" && !import.meta.env.PROD && <AdminPage t={t} lang={lang} onExit={() => navigate("home")} />}
       </main>
 
@@ -246,9 +262,11 @@ function App() {
   );
 }
 
-function HomePage({ t, lang, navigate, publicContent }) {
+function HomePage({ t, lang, navigate, openModal, publicContent }) {
   const isAr = lang === "ar";
   const nextConference = publicContent.conferences?.find((item) => item.status !== "draft") || conferences[0];
+  const previewVideo = publicContent.videos[0];
+  const guidelinesUrl = publicContent.guidelines?.[0]?.url || GUIDELINES_PLATFORM_URL;
   return <>
     <section className="hero">
       <div className="hero-grain" />
@@ -263,7 +281,7 @@ function HomePage({ t, lang, navigate, publicContent }) {
         </div>
         <div className="hero-footnote"><span className="footnote-line" />{t("nextConference")} <b>{localized(nextConference.eventDate || nextConference.date, lang) || t("nextDate")}</b></div>
       </div>
-      <div className="hero-side-caption">{isAr ? "مؤتمر جنى الطبي · ٢٠٢٥" : "GANNA MEDICAL CONFERENCE · 2025"}</div>
+      <div className="hero-side-caption">{isAr ? "المؤتمر العلمي الخامس عشر · ٢٠٢٦" : "GANNA 15TH SCIENTIFIC CONFERENCE · 2026"}</div>
       <button className="hero-scroll" onClick={() => document.getElementById("impact")?.scrollIntoView({ behavior: "smooth" })}><ArrowDown size={16} />{t("scroll")}</button>
       <div className="hero-number">01<span> / 04</span></div>
     </section>
@@ -277,22 +295,46 @@ function HomePage({ t, lang, navigate, publicContent }) {
     </section>
 
     <section className="about-preview">
-      <div className="about-image"><img src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1200&q=85" alt="" /><span className="image-note">{isAr ? "رعاية تنطلق من القلب" : "CARE THAT STARTS FROM THE HEART"}</span></div>
+      <div className="about-image"><img src={publicContent.gallery[0]?.image || gallery[0].image} alt="" /><span className="image-note">{isAr ? "رعاية تنطلق من المعرفة" : "CARE INFORMED BY KNOWLEDGE"}</span></div>
       <div className="about-preview-copy"><div className="eyebrow"><span />{t("aboutEyebrow")}</div><h2>{t("aboutTitle")}</h2><p>{t("aboutText")}</p><button className="text-link" onClick={() => navigate("about")}>{t("learnMore")}<ArrowLeft size={16} /></button><div className="about-scribble">جنى</div></div>
     </section>
 
-    <section className="section-wrap lecture-preview">
-      <SectionHeading eyebrow={t("scienceEyebrow")} title={t("lecturesTitle")} text={t("lecturesText")} action={t("browseLectures")} onAction={() => navigate("lectures")} />
-      <div className="lecture-grid">{publicContent.lectures.slice(0, 3).map((lecture, index) => <LectureCard key={lecture.id} lecture={lecture} lang={lang} index={index} onClick={() => navigate("lectures")} t={t} />)}</div>
+    <section className="home-explore section-wrap">
+      <div className="home-explore-heading">
+        <div><div className="eyebrow"><span />{t("homeExploreEyebrow")}</div><h2>{t("homeExploreTitle")}</h2><p>{t("homeExploreText")}</p></div>
+        <span className="home-explore-count">04 <i>/</i> {isAr ? "مساحات" : "EXPERIENCES"}</span>
+      </div>
     </section>
 
-    <section className="gallery-preview">
-      <div className="gallery-preview-heading"><div><div className="eyebrow light-eyebrow"><span />{t("highlight")}</div><h2>{t("galleryTitle")}</h2></div><button className="button button-ghost-light" onClick={() => navigate("gallery")}>{t("viewGallery")}<ArrowLeft size={17} /></button></div>
-      <div className="gallery-preview-grid">{publicContent.gallery.slice(0, 3).map((item, i) => <div className={`gallery-tile tile-${i + 1}`} key={item.id || localized(item.title, lang)}><img src={item.image} alt={localized(item.title, lang)} /><span>{localized(item.title, lang)}</span></div>)}</div>
+    {previewVideo && <section className="home-resource-section home-video-section section-wrap">
+      <SectionHeading eyebrow={t("pageVideos")} title={t("videosTitle")} text={t("showcaseVideoText")} action={t("pageVideos")} onAction={() => navigate("videos")} />
+      <div className="home-video-feature">
+        <button className="showcase-video-poster" onClick={() => openModal({ kind: "video", record: previewVideo })} aria-label={`${t("showcaseVideoAction")}: ${localized(previewVideo.title, lang)}`}><img src={previewVideo.image} alt="" /><span className="showcase-play"><Play size={19} fill="currentColor" /></span><span className="showcase-duration">{previewVideo.duration}</span></button>
+        <div className="home-video-copy"><div className="home-feature-index">01 <span>/ {isAr ? "من الأرشيف" : "FROM THE ARCHIVE"}</span></div><h3>{localized(previewVideo.title, lang)}</h3><button className="showcase-primary-link" onClick={() => openModal({ kind: "video", record: previewVideo })}>{t("showcaseVideoAction")}<Play size={14} /></button></div>
+      </div>
+    </section>}
+
+    <section className="home-resource-section home-guidelines-section section-wrap">
+      <SectionHeading eyebrow={t("pageGuidelines")} title={t("guideTitle")} text={t("showcaseGuidelinesText")} />
+      <div className="home-guidelines-feature">
+        <div className="home-guidelines-visual" aria-hidden="true"><div className="showcase-guide-cover"><BookOpen size={28} /><span>{t("guideEyebrow")}</span><strong>{t("pageGuidelines")}</strong><i /></div><span className="home-guidelines-decoration">+</span></div>
+        <div className="home-guidelines-copy"><div className="home-feature-index">02 <span>{t("guideEyebrow")}</span></div><div className="showcase-topic-list">{t("showcaseGuidelineTopics").map((topic) => <span key={topic}>{topic}</span>)}</div><a className="showcase-primary-link" href={guidelinesUrl} target="_blank" rel="noopener noreferrer">{t("showcaseGuidelinesAction")}<ExternalLink size={15} /></a></div>
+      </div>
     </section>
 
-    <section className="guideline-banner section-wrap"><div className="guide-icon"><BookOpen size={29} /></div><div><div className="eyebrow"><span />{t("guideEyebrow")}</div><h2>{t("guideTitle")}</h2><p>{t("guideText")}</p></div><button className="circle-arrow" onClick={() => navigate("guidelines")} aria-label={t("guideButton")}><ArrowUpLeft size={22} /></button></section>
-    <section className="closing-cta"><div className="cta-flower">ج</div><div className="eyebrow light-eyebrow"><span />{t("nextConference")}</div><h2>{t("ctaTitle")}</h2><p>{t("ctaText")}</p><button className="button button-light" onClick={() => navigate("register")}>{t("ctaButton")}<ArrowLeft size={17} /></button><div className="cta-date"><CalendarDays size={15} />{t("nextDate")}</div></section>
+    <section className="home-resource-section home-hospital-section section-wrap">
+      <SectionHeading eyebrow={t("pageHospital")} title={t("hospitalTitle")} text={t("showcaseHospitalText")} />
+      <div className="home-hospital-feature"><div className="home-hospital-identity"><BrandLogoPair showcase /><span>{isAr ? "رعاية متخصصة لصحة المرأة" : "SPECIALIST WOMEN'S HEALTHCARE"}</span></div>
+        <div className="home-hospital-copy"><div className="home-feature-index">03 <span>{t("pageHospital")}</span></div><div className="showcase-topic-list">{t("showcaseHospitalTopics").map((topic) => <span key={topic}>{topic}</span>)}</div><button className="showcase-primary-link" onClick={() => navigate("hospital")}>{t("showcaseHospitalAction")}<ArrowUpLeft size={15} /></button></div>
+      </div>
+    </section>
+
+    <section className="home-resource-section home-ask-section section-wrap">
+      <SectionHeading eyebrow={t("pageAsk")} title={t("askTitle")} text={t("showcaseAskText")} />
+      <div className="home-ask-feature"><div className="home-ask-icon"><CircleHelp size={29} /></div><div className="home-ask-copy"><div className="home-feature-index">04 <span>{t("pageAsk")}</span></div></div><button className="showcase-primary-link" onClick={() => navigate("ask")}>{t("showcaseAskAction")}<ArrowUpLeft size={15} /></button></div>
+    </section>
+
+    <section className="closing-cta"><div className="cta-brand-watermark" aria-hidden="true"><BrandLogoPair showcase /></div><div className="eyebrow light-eyebrow"><span />{t("nextConference")}</div><h2>{t("ctaTitle")}</h2><p>{t("ctaText")}</p><button className="button button-light" onClick={() => navigate("register")}>{t("ctaButton")}<ArrowLeft size={17} /></button><div className="cta-date"><CalendarDays size={15} />{t("nextDate")}</div></section>
   </>;
 }
 
@@ -305,29 +347,108 @@ function localized(value, lang) {
   return value?.[lang] || value?.ar || value?.en || "";
 }
 
-function PageIntro({ eyebrow, title, text, tone = "light" }) {
-  return <section className={`page-intro ${tone === "dark" ? "page-intro-dark" : ""}`}><div className="page-intro-inner"><div className="eyebrow"><span />{eyebrow}</div><h1>{title}</h1>{text && <p>{text}</p>}</div><div className="intro-decoration">ج</div></section>;
+function secureCertificateUrl(value) {
+  if (typeof value !== "string" || !value.trim()) return "";
+  try {
+    const url = new URL(value, window.location.origin);
+    return url.protocol === "https:" || url.origin === window.location.origin ? url.href : "";
+  } catch {
+    return "";
+  }
 }
 
-function AboutPage({ t, lang }) {
+function PageIntro({ eyebrow, title, text, tone = "light" }) {
+  return <section className={`page-intro ${tone === "dark" ? "page-intro-dark" : ""}`}><div className="page-intro-inner"><div className="eyebrow"><span />{eyebrow}</div><h1>{title}</h1>{text && <p>{text}</p>}</div><div className="intro-decoration" aria-hidden="true"><BrandLogoPair showcase /></div></section>;
+}
+
+function AboutPage({ t, lang, navigate, openModal, publicContent }) {
   const principles = [t("principle1"), t("principle2"), t("principle3"), t("principle4")];
-  return <><PageIntro eyebrow={t("aboutPageEyebrow")} title={t("aboutPageTitle")} text={t("aboutPageLead")} /><section className="section-wrap about-story"><div className="story-image"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=85" alt="" /><div className="story-image-tag"><Sparkles size={16} />{lang === "ar" ? "علم يجمعنا" : "SCIENCE BRINGS US TOGETHER"}</div></div><div className="story-copy"><div className="eyebrow"><span />{t("vision")}</div><h2>{t("visionText")}</h2><div className="story-divider" /><div className="eyebrow"><span />{t("mission")}</div><p>{t("missionText")}</p></div></section><section className="goals-section"><div className="section-wrap"><SectionHeading eyebrow={t("aboutEyebrow")} title={t("goals")} /><div className="goals-grid">{[t("goal1"), t("goal2"), t("goal3"), t("goal4")].map((goal, i) => <div className="goal-item" key={goal}><span>0{i + 1}</span><p>{goal}</p><ArrowUpLeft size={17} /></div>)}</div></div></section><section className="section-wrap values-section"><div className="eyebrow"><span />{t("principles")}</div><div className="values-row">{principles.map((item, i) => <div key={item}><span>{["01", "02", "03", "04"][i]}</span><strong>{item}</strong></div>)}</div></section></>;
+  const previewLectures = publicContent.lectures.slice(0, 3);
+  const previewGallery = publicContent.gallery.slice(0, 3);
+  return <>
+    <PageIntro eyebrow={t("aboutPageEyebrow")} title={t("aboutPageTitle")} text={t("aboutPageLead")} />
+    <section className="section-wrap about-story"><div className="story-image"><img src={lectures[1].image} alt="" /><div className="story-image-tag"><Sparkles size={16} />{lang === "ar" ? "علم يجمعنا" : "SCIENCE BRINGS US TOGETHER"}</div></div><div className="story-copy"><div className="eyebrow"><span />{t("vision")}</div><h2>{t("visionText")}</h2><div className="story-divider" /><div className="eyebrow"><span />{t("mission")}</div><p>{t("missionText")}</p></div></section>
+    <section className="about-editorial section-wrap">
+      <div className="about-editorial-heading"><div className="eyebrow"><span />{t("scienceEyebrow")}</div><h2>{t("aboutResourcesTitle")}</h2><p>{t("aboutResourcesText")}</p></div>
+      <div className="about-lectures">
+        <div className="about-feature-heading"><div><div className="eyebrow"><span />{t("pageLectures")}</div><h3>{t("lecturesTitle")}</h3><p>{t("lecturesText")}</p></div><button className="showcase-text-link" onClick={() => navigate("lectures")}>{t("browseLectures")}<ArrowUpLeft size={15} /></button></div>
+        <div className="showcase-lecture-grid">{previewLectures.map((lecture) => <button className="showcase-lecture-item" key={lecture.id} onClick={() => openModal({ kind: "lecture", record: lecture })}><img src={lecture.image} alt="" /><span className="showcase-lecture-copy"><small>{localized(lecture.specialty, lang)}</small><strong>{localized(lecture.title, lang)}</strong><span>{localized(lecture.session, lang)}</span></span><ArrowUpLeft className="showcase-lecture-arrow" size={16} /></button>)}</div>
+      </div>
+      <div className="about-gallery">
+        <div className="about-feature-heading"><div><div className="eyebrow"><span />{t("pageGallery")}</div><h3>{t("galleryTitle")}</h3><p>{t("showcaseGalleryText")}</p></div><button className="showcase-text-link" onClick={() => navigate("gallery")}>{t("showcaseGalleryAction")}<ArrowUpLeft size={15} /></button></div>
+        <div className="about-gallery-mosaic">{previewGallery.map((item, index) => <button className={`showcase-gallery-shot showcase-gallery-shot-${index + 1}`} key={item.id || item.image} onClick={() => openModal({ kind: "image", record: item })} aria-label={`${t("preview")}: ${localized(item.title, lang)}`}><img src={item.image} alt={localized(item.title, lang)} /><span>{localized(item.title, lang)}</span></button>)}</div>
+      </div>
+    </section>
+    <section className="goals-section"><div className="section-wrap"><SectionHeading eyebrow={t("aboutEyebrow")} title={t("goals")} /><div className="goals-grid">{[t("goal1"), t("goal2"), t("goal3"), t("goal4")].map((goal, i) => <div className="goal-item" key={goal}><span>0{i + 1}</span><p>{goal}</p><ArrowUpLeft size={17} /></div>)}</div></div></section>
+    <section className="section-wrap values-section"><div className="eyebrow"><span />{t("principles")}</div><div className="values-row">{principles.map((item, i) => <div key={item}><span>{["01", "02", "03", "04"][i]}</span><strong>{item}</strong></div>)}</div></section>
+  </>;
 }
 
 function CertificatesPage({ t, lang, notify, openModal }) {
   const [name, setName] = useState("");
   const [type, setType] = useState("all");
+  const [phone, setPhone] = useState("");
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   async function submit(event) {
     event.preventDefault();
     if (!name.trim()) return;
     setLoading(true);
-    try { setResults(await api.searchCertificates({ name, type })); }
+    try { setResults(await api.searchCertificates({ name, type, phone })); }
     catch (error) { notify(error.message || t("toastError")); }
     finally { setLoading(false); }
   }
-  return <><PageIntro eyebrow={t("pageCertificates")} title={t("certTitle")} text={t("certText")} /><section className="section-wrap certificate-section"><div className="certificate-panel"><div className="certificate-panel-icon"><Award size={28} /></div><div className="eyebrow"><span />{t("certificates")}</div><form className="certificate-form" onSubmit={submit}><label>{t("certType")}<select value={type} onChange={(e) => setType(e.target.value)}><option value="all">{t("allTypes")}</option><option value="conference">{t("regular")}</option><option value="cma">{t("cma")}</option></select></label><label>{t("registeredName")}<div className="input-with-icon"><Search size={17} /><input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("namePlaceholder")} required /></div></label><button className="button button-red" type="submit" disabled={loading}>{loading ? t("searching") : t("certSearch")}<ArrowLeft size={17} /></button></form></div>{results && <div className="certificate-results"><div className="results-heading"><h2>{t("certFound")} <span>{results.length}</span></h2><p>{t("demoUnavailable")}</p></div>{results.length ? results.map((item) => <div className="certificate-result" key={item.id}><div className="certificate-mini-icon"><FileCheck2 size={20} /></div><div className="certificate-result-copy"><strong>{item.name}</strong><span>{item.type === "cma" ? t("cma") : t("regular")} · {item.id}</span></div><div className="certificate-result-actions"><button onClick={() => openModal({ kind: "certificate", record: item })}>{t("preview")}<ExternalLink size={15} /></button><button onClick={() => notify(t("demoUnavailable"))}>{t("download")}<ArrowDown size={15} /></button></div></div>) : <div className="empty-state"><Search size={21} /><p>{t("noCert")}</p></div>}</div>}</section><section className="privacy-callout section-wrap"><ShieldCheck size={21} /><p>{lang === "ar" ? "تظل الشهادات خاصة ومحفوظة في OneDrive. لن تتاح معاينة أو تنزيل حقيقي قبل ربط النظام بواجهة خلفية آمنة." : "Certificates remain private in OneDrive. Live previews or downloads will not be available until a secure backend is connected."}</p></section></>;
+  const demoResults = results?.some((item) => item.isDemo);
+  return <>
+    <PageIntro eyebrow={t("pageCertificates")} title={t("certTitle")} text={t("certText")} />
+    <section className="section-wrap certificate-section">
+      <div className="certificate-panel">
+        <div className="certificate-panel-icon"><Award size={28} /></div>
+        <div className="eyebrow"><span />{t("certificates")}</div>
+        <form className="certificate-form" onSubmit={submit}>
+          <label>{t("certType")}
+            <select value={type} onChange={(event) => { setType(event.target.value); setResults(null); }}>
+              <option value="all">{t("allTypes")}</option>
+              <option value="conference">{t("regular")}</option>
+              <option value="cme">{t("cme")}</option>
+            </select>
+          </label>
+          <label>{t("registeredName")}
+            <div className="input-with-icon"><Search size={17} /><input value={name} onChange={(event) => setName(event.target.value)} placeholder={t("namePlaceholder")} required /></div>
+          </label>
+          {type === "cme" && <label>{t("registeredPhone")}<input type="tel" inputMode="numeric" autoComplete="tel-national" value={phone} onChange={(event) => setPhone(normalizeEgyptianMobile(event.target.value))} placeholder={t("phonePlaceholder")} pattern={EGYPTIAN_MOBILE_PATTERN} title={t("phoneError")} required /></label>}
+          <button className="button button-red" type="submit" disabled={loading}>{loading ? t("searching") : t("certSearch")}<ArrowLeft size={17} /></button>
+        </form>
+      </div>
+      {results && <div className="certificate-results">
+        <div className="results-heading"><h2>{t("certFound")} <span>{results.length}</span></h2><p>{demoResults ? t("demoUnavailable") : t("secureCertificateNote")}</p></div>
+        {results.length ? results.map((item) => <CertificateResult key={item.id} item={item} t={t} notify={notify} openModal={openModal} />) : <div className="empty-state"><Search size={21} /><p>{t("noCert")}</p></div>}
+      </div>}
+    </section>
+    <section className="privacy-callout section-wrap"><ShieldCheck size={21} /><p>{lang === "ar" ? "ملفات وبيانات الشهادات هنا تجريبية للعرض فقط. البحث بالاسم لا يثبت الهوية؛ يلزم Backend آمن للشهادات الحقيقية." : "Certificate files and records here are demo-only. Name search does not verify identity; real certificates require a secure backend."}</p></section>
+  </>;
+}
+
+function CertificateResult({ item, t, notify, openModal }) {
+  const imageUrl = secureCertificateUrl(item.imageUrl);
+  const downloadUrl = secureCertificateUrl(item.downloadUrl);
+  function preview() {
+    if (!imageUrl) {
+      notify(t("certificateLinkUnavailable"));
+      return;
+    }
+    openModal({ kind: "certificate", record: { ...item, imageUrl, downloadUrl } });
+  }
+  return <article className="certificate-result">
+    <div className="certificate-result-heading">
+      <div className="certificate-mini-icon"><FileCheck2 size={20} /></div>
+      <div className="certificate-result-copy"><strong>{item.name}</strong><span>{item.type === "cme" ? t("cme") : t("regular")} · {item.id}</span></div>
+      <div className="certificate-result-actions">
+        <button onClick={preview}>{t("preview")}<ExternalLink size={15} /></button>
+        {downloadUrl ? <a href={downloadUrl} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{t("download")}<ArrowDown size={15} /></a> : <button onClick={() => notify(item.isDemo ? t("demoUnavailable") : t("certificateLinkUnavailable"))}>{t("download")}<ArrowDown size={15} /></button>}
+      </div>
+    </div>
+  </article>;
 }
 
 function GalleryPage({ t, lang, openModal, items }) {
@@ -360,13 +481,9 @@ function LecturesPage({ t, lang, openModal, items }) {
   return <><PageIntro eyebrow={t("pageLectures")} title={t("lecturePageTitle")} text={lang === "ar" ? "ملخصات منظمة للمحاضرات العلمية، دون نشر ملفات العروض التقديمية." : "Curated summaries of scientific presentations, without publishing original slide decks."} /><section className="section-wrap lectures-page-section"><div className="lecture-filter"><label>{t("filterBy")}<select value={dimension} onChange={(e) => { setDimension(e.target.value); setFilter("all"); }}><option value="specialty">{t("filterSpecialty")}</option><option value="speaker">{t("filterSpeaker")}</option><option value="session">{t("filterSession")}</option></select></label><select aria-label={allLabel} value={filter} onChange={(e) => setFilter(e.target.value)}><option value="all">{allLabel}</option>{options.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>{filtered.length ? <div className="lecture-grid">{filtered.map((lecture, index) => <LectureCard key={lecture.id} lecture={lecture} lang={lang} index={index} t={t} onClick={() => openModal({ kind: "lecture", record: lecture })} />)}</div> : <div className="empty-state">{t("noLectures")}</div>}</section></>;
 }
 
-function GuidelinesPage({ t, notify, platformUrl }) {
-  function openGuidelines() {
-    const url = platformUrl || import.meta.env.VITE_GUIDELINES_PLATFORM_URL;
-    if (!url) { notify(t("externalPending")); return; }
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-  return <><PageIntro eyebrow={t("pageGuidelines")} title={t("guidePageTitle")} text={t("guidePageText")} /><section className="section-wrap guidelines-content"><div className="guideline-book"><div className="book-art"><BookOpen size={55} strokeWidth={1.2} /><span>G</span></div><div className="eyebrow"><span />GUIDELINES BOOK</div><h2>{t("guideTitle")}</h2><p>{t("guidePageText")}</p><button className="button button-red" onClick={openGuidelines}>{t("openSearch")}<ExternalLink size={16} /></button><button className="text-link" onClick={openGuidelines}>{t("accessPlatform")}<ArrowUpLeft size={15} /></button></div><div className="guidelines-side"><div className="guideline-side-item"><span>01</span><div><strong>{t("pageGuidelines")}</strong><p>{langText("Open the previous conference QR-linked platform to search trusted references.", "افتح المنصة المرتبطة برمز QR للمؤتمر السابق للبحث في المراجع المعتمدة.")}</p></div></div><div className="guideline-side-item"><span>02</span><div><strong>{langText("Evidence-based references", "مراجع مبنية على الدليل")}</strong><p>{langText("Browse the scientific resources selected by the conference team.", "تصفح الموارد العلمية التي اعتمدها فريق المؤتمر.")}</p></div></div><div className="guidelines-note"><ExternalLink size={18} /><p>{t("externalPending")}</p></div></div></section></>;
+function GuidelinesPage({ t, platformUrl }) {
+  const guidelinesUrl = platformUrl || GUIDELINES_PLATFORM_URL;
+  return <><PageIntro eyebrow={t("pageGuidelines")} title={t("guidePageTitle")} text={t("guidePageText")} /><section className="section-wrap guidelines-content"><div className="guideline-book"><div className="book-art"><BookOpen size={55} strokeWidth={1.2} /><span>G</span></div><div className="eyebrow"><span />GUIDELINES BOOK</div><h2>{t("guideTitle")}</h2><p>{t("guidePageText")}</p><a className="button button-red" href={guidelinesUrl} target="_blank" rel="noopener noreferrer">{t("openSearch")}<ExternalLink size={16} /></a><a className="text-link" href={guidelinesUrl} target="_blank" rel="noopener noreferrer">{t("accessPlatform")}<ArrowUpLeft size={15} /></a></div><div className="guidelines-side"><div className="guideline-side-item"><span>01</span><div><strong>{t("pageGuidelines")}</strong><p>{langText("Open the conference guidelines platform to search trusted medical references.", "افتح منصة الجايدلاينز للبحث في المراجع الطبية المعتمدة.")}</p></div></div><div className="guideline-side-item"><span>02</span><div><strong>{langText("Evidence-based references", "مراجع مبنية على الدليل")}</strong><p>{langText("Browse the scientific resources available on the platform.", "تصفح الموارد العلمية المتاحة على المنصة.")}</p></div></div><div className="guidelines-note"><ExternalLink size={18} /><p>{t("externalPending")}</p></div></div></section></>;
 }
 function langText(en, ar) { return document.documentElement.lang === "ar" ? ar : en; }
 
@@ -391,7 +508,7 @@ function AskPage({ t, lang, notify }) {
     catch (error) { notify(error.message || t("toastError")); }
     finally { setLoading(false); }
   }
-  return <><PageIntro eyebrow={t("pageAsk")} title={t("askTitle")} text={t("askText")} /><section className="section-wrap form-layout"><div className="form-aside"><div className="aside-icon"><CircleHelp size={25} /></div><h2>{lang === "ar" ? "سؤالك قد يفتح بابًا لمعرفة جديدة." : "Your question might open a door to new understanding."}</h2><p>{t("privateNote")}</p><div className="aside-note"><ShieldCheck size={18} /><span>{t("questionDisclaimer")}</span></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} isQuestion /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 02</span><h2>{lang === "ar" ? "أخبرنا كيف نساعدك." : "Tell us how we can help."}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required placeholder={lang === "ar" ? "الاسم كما تحب أن نناديك" : "How should we address you?"} /><FormField label={t("email")} name="email" type="email" required placeholder="name@example.com" /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><label className="field full-field">{t("yourQuestion")}<textarea name="question" required rows="5" placeholder={t("questionPlaceholder")} maxLength="2000" /></label></div><label className="consent-row"><input type="checkbox" required /><span>{t("consentPrivacy")}</span></label><p className="form-disclaimer">{t("questionDisclaimer")}</p><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitQuestion")}<ArrowLeft size={17} /></button></form>}</div></section></>;
+  return <><PageIntro eyebrow={t("pageAsk")} title={t("askTitle")} text={t("askText")} /><section className="section-wrap form-layout"><div className="form-aside"><div className="aside-icon"><CircleHelp size={25} /></div><h2>{lang === "ar" ? "سؤالك قد يفتح بابًا لمعرفة جديدة." : "Your question might open a door to new understanding."}</h2><p>{t("privateNote")}</p><div className="aside-note"><ShieldCheck size={18} /><span>{t("questionDisclaimer")}</span></div><div className="demo-label"><span />{t("adminDemo")}</div></div><div className="form-card">{submitted ? <FormSuccess t={t} record={submitted} isQuestion /> : <form onSubmit={submit}><div className="form-card-heading"><span>01 / 02</span><h2>{lang === "ar" ? "أخبرنا كيف نساعدك." : "Tell us how we can help."}</h2></div><div className="form-grid"><FormField label={t("fullName")} name="name" required placeholder={lang === "ar" ? "الاسم كما تحب أن نناديك" : "How should we address you?"} /><FormField label={t("email")} name="email" type="email" required placeholder="name@example.com" /><FormField label={t("phone")} name="phone" type="tel" required lang={lang} dir="ltr" placeholder="01012345678" /><label className="field full-field">{t("yourQuestion")}<textarea name="question" required rows="5" placeholder={t("questionPlaceholder")} maxLength="2000" /></label></div><label className="consent-row"><input type="checkbox" required /><span>{t("dataUseConsent")}</span></label><p className="form-disclaimer">{t("questionDisclaimer")}</p><button className="button button-red form-submit" type="submit" disabled={loading}>{loading ? t("submitting") : t("submitQuestion")}<ArrowLeft size={17} /></button></form>}</div></section></>;
 }
 
 function FormField({ label, name, type = "text", required = false, placeholder = "", dir, lang }) {
@@ -430,12 +547,30 @@ function RegistrationPage({ t, lang, notify }) {
 }
 
 function ContactPage({ t }) {
-  return <><PageIntro eyebrow={t("pageContact")} title={t("contactTitle")} text={t("contactText")} /><section className="section-wrap contact-section"><div className="contact-card contact-primary"><span className="contact-icon"><Mail size={20} /></span><div className="eyebrow"><span />{t("emailUs")}</div><h2>contact@example.com</h2><a href="mailto:contact@example.com" className="text-link">{t("sendEmail")}<ArrowUpLeft size={15} /></a></div><div className="contact-card"><span className="contact-icon"><MapPin size={20} /></span><div className="eyebrow"><span />{t("location")}</div><h3>{t("locationValue")}</h3><p>{t("conferenceOffice")}</p></div><div className="contact-card"><span className="contact-icon"><CalendarDays size={20} /></span><div className="eyebrow"><span />{t("conferenceOffice")}</div><h3>{t("officeText")}</h3><p>{t("contactNote")}</p></div></section><div className="contact-bottom section-wrap"><div className="contact-map-placeholder"><MapPin size={22} /><span>{t("locationValue")}</span></div><p>{t("contactNote")}</p></div></>;
-}
-
-function PrivacyPage({ t }) {
-  const items = [["privacy1Title", "privacy1Text"], ["privacy2Title", "privacy2Text"], ["privacy3Title", "privacy3Text"], ["privacy4Title", "privacy4Text"], ["privacy5Title", "privacy5Text"]];
-  return <><PageIntro eyebrow={t("pagePrivacy")} title={t("privacyTitle")} text={t("privacyLead")} /><section className="section-wrap privacy-section"><div className="privacy-list">{items.map(([heading, body], i) => <article className="privacy-item" key={heading}><span>0{i + 1}</span><div><h2>{t(heading)}</h2><p>{t(body)}</p></div></article>)}</div><div className="privacy-demo-note"><ShieldCheck size={20} /><p>{t("privacyDemo")}</p></div></section></>;
+  return <>
+    <PageIntro eyebrow={t("pageContact")} title={t("contactTitle")} text={t("contactText")} />
+    <section className="section-wrap contact-section">
+      <article className="contact-card contact-organizer-card">
+        <span className="contact-icon"><Building2 size={20} /></span>
+        <div className="eyebrow"><span />{t("organizerLabel")}</div>
+        <h2>{t("organizerName")}</h2>
+        <div className="contact-organizer-handle"><AtSign size={15} /><span>{t("organizerHandle")}</span></div>
+      </article>
+      <article className="contact-card contact-primary">
+        <span className="contact-icon"><Phone size={20} /></span>
+        <div className="eyebrow"><span />{t("contactPhoneLabel")}</div>
+        <h2 dir="ltr">010 62949191</h2>
+        <a href="tel:01062949191" className="text-link">{t("contactPhoneLabel")}<ArrowUpLeft size={15} /></a>
+      </article>
+      <article className="contact-card contact-email-card">
+        <span className="contact-icon"><Mail size={20} /></span>
+        <div className="eyebrow"><span />{t("contactEmailLabel")}</div>
+        <h2><a href="mailto:marketing4@innovatorsgroup.org">marketing4@innovatorsgroup.org</a></h2>
+        <a href="mailto:marketing4@innovatorsgroup.org" className="text-link">{t("sendEmail")}<ArrowUpLeft size={15} /></a>
+      </article>
+    </section>
+    <div className="contact-bottom section-wrap"><div className="contact-map-placeholder"><MapPin size={22} /><span>{t("locationValue")}</span></div><p>{t("contactNote")}</p></div>
+  </>;
 }
 
 const adminSections = [
@@ -511,7 +646,7 @@ function AdminPage({ t, lang, onExit }) {
 
   return <div className="admin-shell">
     <aside className="admin-sidebar">
-      <button className="admin-brand" onClick={() => setTab("dashboard")}><span className="brand-mark"><span>ج</span><i /></span><strong>GANNA <small>CONFERENCE PORTAL</small></strong></button>
+      <button className="admin-brand" onClick={() => setTab("dashboard")}><img className="admin-brand-logo" src={brandLogos.mainLight} alt="Ganna Conference" /><strong><small>CONFERENCE PORTAL</small></strong></button>
       <div className="admin-nav-groups">{adminSections.map((section) => <div className="admin-nav-group" key={section.group}><div className="admin-side-label">{a(section.group)}</div>{section.items.map((item) => { const Icon = adminIcons[item]; return <button className={tab === item ? "admin-side-link selected" : "admin-side-link"} key={item} onClick={() => { setTab(item); setQuery(""); setSelectedRecord(null); }}><Icon size={17} /><span>{a(item)}</span>{item === "questions" && openCount > 0 && <small>{openCount}</small>}</button>; })}</div>)}</div>
       <div className="admin-sidebar-bottom"><span className="admin-status-dot" /><span>{a("liveDemo")}</span></div>
       <button className="admin-exit-link" onClick={onExit}><ArrowLeft size={15} />{a("backToSite")}</button>
@@ -652,8 +787,8 @@ function CertificatesManager({ records, query, setQuery, results, setResults, a,
     setResults(await api.searchCertificates({ name: query, type: "all" }));
   }
   return <><AdminPageHeading title={a("certificates")} subtitle={a("managerSubtitle")} a={a} lang={lang} />
-    <div className="cert-admin-grid"><section className="admin-panel onedrive-panel"><div className="onedrive-brand"><span><Link2 size={21} /></span><div><h2>{a("onedriveTitle")}</h2><small>Microsoft Graph API</small></div></div><div className="onedrive-status-row"><span>{a("connectionStatus")}</span><b><i />{a("notConnected")}</b></div><p>{a("onedriveDesc")}</p><div className="onedrive-safety"><ShieldCheck size={18} /><span>{a("neverPublic")}</span></div></section><section className="admin-panel certificate-counts"><div className="admin-panel-heading"><div><h2>{a("certificateFolders")}</h2><p>{a("secureBackend")}</p></div><Award size={18} /></div><div><span>{a("conferenceCertificates")}</span><strong>{records.filter((item) => item.type === "conference").length}</strong></div><div><span>{a("cmaCertificates")}</span><strong>{records.filter((item) => item.type === "cma").length}</strong></div></section></div>
-    <section className="admin-panel cert-search-panel"><div className="admin-panel-heading"><div><h2>{a("certificateSearch")}</h2><p>{a("testName")}</p></div></div><form className="admin-cert-search" onSubmit={search}><label className="admin-search"><Search size={16} /><input required value={query} onChange={(e) => setQuery(e.target.value)} placeholder={a("testName")} /></label><button className="admin-primary-button"><Search size={15} />{a("search")}</button></form>{results && <div className="certificate-demo-results"><h3>{a("certificateResults")}</h3>{results.length ? results.map((item) => <div key={item.id}><Award size={17} /><span><strong>{item.name}</strong><small>{item.id} · {item.type === "cma" ? a("cmaCertificates") : a("conferenceCertificates")}</small></span><span className="admin-status status-published">{a("published")}</span></div>) : <p>{a("noCertificateResults")}</p>}</div>}</section>
+    <div className="cert-admin-grid"><section className="admin-panel onedrive-panel"><div className="onedrive-brand"><span><Link2 size={21} /></span><div><h2>{a("onedriveTitle")}</h2><small>Microsoft Graph API</small></div></div><div className="onedrive-status-row"><span>{a("connectionStatus")}</span><b><i />{a("notConnected")}</b></div><p>{a("onedriveDesc")}</p><div className="onedrive-safety"><ShieldCheck size={18} /><span>{a("neverPublic")}</span></div></section><section className="admin-panel certificate-counts"><div className="admin-panel-heading"><div><h2>{a("certificateFolders")}</h2><p>{a("secureBackend")}</p></div><Award size={18} /></div><div><span>{a("conferenceCertificates")}</span><strong>{records.filter((item) => item.type === "conference").length}</strong></div><div><span>{a("cmeCertificates")}</span><strong>{records.filter((item) => item.type === "cme").length}</strong></div></section></div>
+    <section className="admin-panel cert-search-panel"><div className="admin-panel-heading"><div><h2>{a("certificateSearch")}</h2><p>{a("testName")}</p></div></div><form className="admin-cert-search" onSubmit={search}><label className="admin-search"><Search size={16} /><input required value={query} onChange={(e) => setQuery(e.target.value)} placeholder={a("testName")} /></label><button className="admin-primary-button"><Search size={15} />{a("search")}</button></form>{results && <div className="certificate-demo-results"><h3>{a("certificateResults")}</h3>{results.length ? results.map((item) => <div key={item.id}><Award size={17} /><span><strong>{item.name}</strong><small>{item.id} · {item.type === "cme" ? a("cmeCertificates") : a("conferenceCertificates")}</small></span><span className="admin-status status-published">{a("published")}</span></div>) : <p>{a("noCertificateResults")}</p>}</div>}</section>
   </>;
 }
 
@@ -688,13 +823,48 @@ function RoleMatrix({ a, lang }) {
 }
 
 function Footer({ t, lang, navigate }) {
-  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button className="brand" onClick={() => navigate("home")}><span className="brand-mark"><span>ج</span><i /></span><span className="brand-copy"><strong>جَنَى</strong><small>{t("tagline")}</small></span></button><p>{t("footerText")}</p><div className="footer-socials"><a href="mailto:hello@ganna.org" aria-label="Email"><Mail size={16} /></a><button aria-label="Social media" onClick={() => navigate("contact")}><ExternalLink size={16} /></button></div></div><div className="footer-links"><strong>{t("quickLinks")}</strong><div>{["about", "lectures", "certificates", "gallery"].map((item) => <button key={item} onClick={() => navigate(item)}>{labels[lang][item]}</button>)}</div></div><div className="footer-links"><strong>{t("contactUs")}</strong><div><button onClick={() => navigate("contact")}>{labels[lang].contact}</button><button onClick={() => navigate("ask")}>{labels[lang].ask}</button><button onClick={() => navigate("privacy")}>{labels[lang].privacy}</button>{!import.meta.env.PROD && <button onClick={() => navigate("admin")}>{t("admin")}</button>}</div></div><div className="footer-next"><span>{t("nextConference")}</span><strong>{conferences[0].title[lang]}</strong><small>{conferences[0].date[lang]}</small><button onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {t("rights")}</span><span>{t("followUs")} <span className="footer-dot">✳</span></span></div></footer>;
+  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button className="brand brand-pair" onClick={() => navigate("home")} aria-label="Ganna Conference and Hospitals home"><BrandLogoPair /></button><p>{t("footerText")}</p><div className="footer-socials"><a href="mailto:marketing4@innovatorsgroup.org" aria-label="Email"><Mail size={16} /></a><button aria-label="Social media" onClick={() => navigate("contact")}><ExternalLink size={16} /></button></div></div><div className="footer-links"><strong>{t("quickLinks")}</strong><div>{["about", "lectures", "certificates", "gallery"].map((item) => <button key={item} onClick={() => navigate(item)}>{labels[lang][item]}</button>)}</div></div><div className="footer-links"><strong>{t("contactUs")}</strong><div><button onClick={() => navigate("contact")}>{labels[lang].contact}</button><button onClick={() => navigate("ask")}>{labels[lang].ask}</button>{!import.meta.env.PROD && <button onClick={() => navigate("admin")}>{t("admin")}</button>}</div></div><div className="footer-next"><span>{t("nextConference")}</span><strong>{conferences[0].title[lang]}</strong><small>{conferences[0].date[lang]}</small><button onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {t("rights")}</span><span>{t("followUs")} <span className="footer-dot">✳</span></span></div></footer>;
+}
+
+function BrandLogoPair({ showcase = false }) {
+  return <span className={`brand-logo-pair ${showcase ? "showcase-hospital-logos" : ""}`}>
+    <img className="brand-logo brand-logo-dark brand-logo-main" src={brandLogos.mainDark} alt="Ganna Conference" />
+    <img className="brand-logo brand-logo-light brand-logo-main" src={brandLogos.mainLight} alt="Ganna Conference" />
+    <span className="brand-logo-divider" />
+    <img className="brand-logo brand-logo-dark brand-logo-hospital" src={brandLogos.hospitalLight} alt="Ganna Hospitals" />
+    <img className="brand-logo brand-logo-light brand-logo-hospital" src={brandLogos.hospitalDark} alt="Ganna Hospitals" />
+  </span>;
 }
 
 function Modal({ modal, t, close, lang }) {
   const { kind, record } = modal;
-  const title = localized(record.title, lang);
-  return <div className="modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}><div className={`modal-card ${kind === "image" ? "image-modal" : ""}`} role="dialog" aria-modal="true" aria-label={kind === "lecture" ? t("viewDetails") : kind === "certificate" ? t("preview") : title}><button className="modal-close" onClick={close} aria-label={t("close")}><X size={18} /></button>{kind === "lecture" && <><div className="modal-image"><img src={record.image} alt="" /></div><div className="modal-body"><div className="eyebrow"><span />{localized(record.specialty, lang)}</div><h2>{title}</h2><p className="modal-speaker">{t("speaker")}: {localized(record.speaker, lang)} · {localized(record.session, lang)}</p><h3>{t("lectureOverview")}</h3><p>{localized(record.summary, lang)}</p><h3>{t("keyTopics")}</h3><ul>{(record.topics?.[lang] || []).map((topic) => <li key={topic}>{topic}</li>)}</ul><div className="takeaway"><Sparkles size={18} /><p><strong>{t("keyTakeaway")}</strong>{t("takeawayText")}</p></div></div></>}{kind === "image" && <><img src={record.image} alt={title} /><div className="image-modal-caption"><span>{localized(record.category, lang)}</span><strong>{title}</strong></div></>}{kind === "video" && <><div className="video-modal-poster"><img src={record.image} alt="" /><span className="play-button"><Play size={19} fill="currentColor" /></span></div><div className="modal-body"><div className="eyebrow"><span />{localized(record.speaker, lang)}</div><h2>{title}</h2><p>{t("videoDemo")}</p></div></>}{kind === "certificate" && <div className="modal-body"><div className="certificate-preview"><Award size={35} /><span>GANNA MEDICAL CONFERENCE</span><small>{t("preview")}</small><strong>{record.name}</strong><i>{record.type === "cma" ? t("cma") : t("regular")}</i><span>{record.id}</span></div><p className="certificate-preview-notice">{t("demoUnavailable")}</p></div>}</div></div>;
+  const title = localized(record.title, lang) || record.name || "";
+  return (
+    <div className="modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+      <div className={`modal-card ${kind === "image" ? "image-modal" : ""}`} role="dialog" aria-modal="true" aria-label={kind === "lecture" ? t("viewDetails") : kind === "certificate" ? t("preview") : title}>
+        <button className="modal-close" onClick={close} aria-label={t("close")}><X size={18} /></button>
+        {kind === "lecture" && <>
+          <div className="modal-image"><img src={record.image} alt="" /></div>
+          <div className="modal-body"><div className="eyebrow"><span />{localized(record.specialty, lang)}</div><h2>{title}</h2><p className="modal-speaker">{t("speaker")}: {localized(record.speaker, lang)} · {localized(record.session, lang)}</p><h3>{t("lectureOverview")}</h3><p>{localized(record.summary, lang)}</p><h3>{t("keyTopics")}</h3><ul>{(record.topics?.[lang] || []).map((topic) => <li key={topic}>{topic}</li>)}</ul><div className="takeaway"><Sparkles size={18} /><p><strong>{t("keyTakeaway")}</strong>{t("takeawayText")}</p></div></div>
+        </>}
+        {kind === "image" && <><img src={record.image} alt={title} /><div className="image-modal-caption"><span>{localized(record.category, lang)}</span><strong>{title}</strong></div></>}
+        {kind === "video" && <><div className="video-modal-poster"><img src={record.image} alt="" /><span className="play-button"><Play size={19} fill="currentColor" /></span></div><div className="modal-body"><div className="eyebrow"><span />{localized(record.speaker, lang)}</div><h2>{title}</h2><p>{t("videoDemo")}</p></div></>}
+        {kind === "certificate" && <CertificateDocument record={record} title={title} t={t} />}
+      </div>
+    </div>
+  );
+}
+
+function CertificateDocument({ record, title, t }) {
+  const imageUrl = secureCertificateUrl(record.imageUrl);
+  const downloadUrl = secureCertificateUrl(record.downloadUrl);
+  return <div className="certificate-document">
+    <div className="certificate-document-heading">
+      <h2>{title}</h2>
+      {downloadUrl && <a href={downloadUrl} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{t("download")}<ArrowDown size={15} /></a>}
+    </div>
+    {imageUrl ? <img className="certificate-document-image" src={imageUrl} alt={`${record.name} — ${record.type === "cme" ? t("cme") : t("regular")}`} /> : <p className="certificate-preview-notice">{t("certificateLinkUnavailable")}</p>}
+  </div>;
 }
 
 export default App;

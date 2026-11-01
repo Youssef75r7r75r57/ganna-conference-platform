@@ -17,7 +17,6 @@
 .site-shell.is-ltr .story-copy h2,
 .site-shell.is-ltr .guideline-book h2,
 .site-shell.is-ltr .hospital-feature-copy h2,
-.site-shell.is-ltr .privacy-item h2,
 .site-shell.is-ltr .video-copy h2 {
   font-family: var(--serif);
 }
@@ -170,7 +169,7 @@
   inset-inline-end: auto;
   right: 97%;
 }
-html[data-theme="dark"] .site-shell.is-ltr .hero-image { background-image: linear-gradient(90deg, #050a12 0%, #050a12e8 23%, #050a1240 72%, #050a121f 100%), url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1900&q=90"); }
+html[data-theme="dark"] .site-shell.is-ltr .hero-image { background-image: linear-gradient(90deg, #050a12 0%, #050a12e8 23%, #050a1240 72%, #050a121f 100%), url("./assets/lecture-1.webp"); }
 
 .site-shell.is-ltr .hero-image {
   inset: 0 0 0 34%;
@@ -187,8 +186,7 @@ html[data-theme="dark"] .site-shell.is-ltr .hero-image { background-image: linea
   inset-inline-end: 5.2%;
 }
 
-.site-shell.is-ltr .about-preview,
-.site-shell.is-ltr .gallery-preview-grid {
+.site-shell.is-ltr .about-preview {
   direction: ltr;
 }
 
@@ -203,10 +201,6 @@ html[data-theme="dark"] .site-shell.is-ltr .hero-image { background-image: linea
 
 .site-shell.is-ltr .about-preview-copy {
   grid-area: copy;
-}
-
-.site-shell.is-ltr .gallery-preview-grid {
-  grid-auto-flow: dense;
 }
 
 .site-shell.is-ltr .lecture-filter {
@@ -280,15 +274,12 @@ html[data-theme="dark"] .site-shell.is-ltr .form-grid .field select {
 
 
 
-.site-shell.is-ltr .about-preview,
-.site-shell.is-ltr .gallery-preview {
+.site-shell.is-ltr .about-preview {
   max-width: 100%;
   overflow: hidden;
 }
 
-.site-shell.is-ltr .about-image,
-.site-shell.is-ltr .gallery-preview-grid,
-.site-shell.is-ltr .gallery-tile {
+.site-shell.is-ltr .about-image {
   min-width: 0;
 }
 
@@ -319,8 +310,7 @@ html[data-theme="dark"] .site-shell.is-ltr .form-grid .field select {
 .site-shell.is-ltr .guideline-side-item p,
 .site-shell.is-ltr .hospital-feature-copy p,
 .site-shell.is-ltr .form-aside > p,
-.site-shell.is-ltr .contact-card p,
-.site-shell.is-ltr .privacy-item p {
+.site-shell.is-ltr .contact-card p {
   font-size: 14px;
   line-height: 1.75;
 }
@@ -645,8 +635,7 @@ html[data-theme="dark"] .site-shell.is-ltr .form-grid .field select {
   .site-shell.is-ltr .guideline-side-item p,
   .site-shell.is-ltr .hospital-feature-copy p,
   .site-shell.is-ltr .form-aside > p,
-  .site-shell.is-ltr .contact-card p,
-  .site-shell.is-ltr .privacy-item p {
+  .site-shell.is-ltr .contact-card p {
     font-size: 13px;
   }
 
