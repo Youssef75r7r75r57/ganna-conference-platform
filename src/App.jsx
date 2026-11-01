@@ -168,6 +168,7 @@ function App() {
   }
 
   function navigate(nextPage) {
+    if (import.meta.env.PROD && nextPage === "admin") return;
     setPage(nextPage);
     setMobileMenu(false);
     setMoreOpen(false);
@@ -213,7 +214,7 @@ function App() {
               </div>
             )}
           </div>
-          <button className="nav-link admin-nav" onClick={() => navigate("admin")}>{t("admin")}</button>
+          {!import.meta.env.PROD && <button className="nav-link admin-nav" onClick={() => navigate("admin")}>{t("admin")}</button>}
         </nav>
         <div className="header-actions">
           <button className="language-toggle" onClick={switchLanguage} aria-label="Switch language"><Languages size={16} /><span>{isAr ? "EN" : "عربي"}</span></button>
@@ -235,10 +236,10 @@ function App() {
         {page === "register" && <RegistrationPage t={t} lang={lang} notify={notify} />}
         {page === "contact" && <ContactPage t={t} />}
         {page === "privacy" && <PrivacyPage t={t} />}
-        {page === "admin" && <AdminPage t={t} lang={lang} onExit={() => navigate("home")} />}
+        {page === "admin" && !import.meta.env.PROD && <AdminPage t={t} lang={lang} onExit={() => navigate("home")} />}
       </main>
 
-      {page !== "admin" && <Footer t={t} lang={lang} navigate={navigate} />}
+      {(page !== "admin" || import.meta.env.PROD) && <Footer t={t} lang={lang} navigate={navigate} />}
       {modal && <Modal modal={modal} t={t} close={() => setModal(null)} lang={lang} />}
       {toast && <div className="toast" role="status"><Check size={17} />{toast}</div>}
     </div>
@@ -687,7 +688,7 @@ function RoleMatrix({ a, lang }) {
 }
 
 function Footer({ t, lang, navigate }) {
-  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button className="brand" onClick={() => navigate("home")}><span className="brand-mark"><span>ج</span><i /></span><span className="brand-copy"><strong>جَنَى</strong><small>{t("tagline")}</small></span></button><p>{t("footerText")}</p><div className="footer-socials"><a href="mailto:hello@ganna.org" aria-label="Email"><Mail size={16} /></a><button aria-label="Social media" onClick={() => navigate("contact")}><ExternalLink size={16} /></button></div></div><div className="footer-links"><strong>{t("quickLinks")}</strong><div>{["about", "lectures", "certificates", "gallery"].map((item) => <button key={item} onClick={() => navigate(item)}>{labels[lang][item]}</button>)}</div></div><div className="footer-links"><strong>{t("contactUs")}</strong><div><button onClick={() => navigate("contact")}>{labels[lang].contact}</button><button onClick={() => navigate("ask")}>{labels[lang].ask}</button><button onClick={() => navigate("privacy")}>{labels[lang].privacy}</button><button onClick={() => navigate("admin")}>{t("admin")}</button></div></div><div className="footer-next"><span>{t("nextConference")}</span><strong>{conferences[0].title[lang]}</strong><small>{conferences[0].date[lang]}</small><button onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {t("rights")}</span><span>{t("followUs")} <span className="footer-dot">✳</span></span></div></footer>;
+  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button className="brand" onClick={() => navigate("home")}><span className="brand-mark"><span>ج</span><i /></span><span className="brand-copy"><strong>جَنَى</strong><small>{t("tagline")}</small></span></button><p>{t("footerText")}</p><div className="footer-socials"><a href="mailto:hello@ganna.org" aria-label="Email"><Mail size={16} /></a><button aria-label="Social media" onClick={() => navigate("contact")}><ExternalLink size={16} /></button></div></div><div className="footer-links"><strong>{t("quickLinks")}</strong><div>{["about", "lectures", "certificates", "gallery"].map((item) => <button key={item} onClick={() => navigate(item)}>{labels[lang][item]}</button>)}</div></div><div className="footer-links"><strong>{t("contactUs")}</strong><div><button onClick={() => navigate("contact")}>{labels[lang].contact}</button><button onClick={() => navigate("ask")}>{labels[lang].ask}</button><button onClick={() => navigate("privacy")}>{labels[lang].privacy}</button>{!import.meta.env.PROD && <button onClick={() => navigate("admin")}>{t("admin")}</button>}</div></div><div className="footer-next"><span>{t("nextConference")}</span><strong>{conferences[0].title[lang]}</strong><small>{conferences[0].date[lang]}</small><button onClick={() => navigate("register")}>{t("registerNow")}<ArrowUpLeft size={15} /></button></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {t("rights")}</span><span>{t("followUs")} <span className="footer-dot">✳</span></span></div></footer>;
 }
 
 function Modal({ modal, t, close, lang }) {

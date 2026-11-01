@@ -13,6 +13,10 @@ npm install
 npm run dev
 ```
 
+## Public preview
+
+The `main` branch is deployed to GitHub Pages at <https://youssef75r7r75r57.github.io/ganna-conference-platform/>. Each push to `main` builds and publishes the frontend automatically. The public production build hides the unauthenticated admin preview; forms and demo data remain frontend-only and are not saved to a backend.
+
 Create a local `.env` from `.env.example` and set `VITE_GUIDELINES_PLATFORM_URL` when the previous guidelines platform URL is confirmed. Leave it empty to show the setup notice instead of opening a placeholder destination.
 
 ## Frontend/backend boundary
